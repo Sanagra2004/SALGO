@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>SALGO · Carga de lugares</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/components.css">
+<link rel="stylesheet" href="src/styles/screens.css">
+<style>
+  html, body { overflow: auto; background: var(--bg); }
+  .adm-wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 60px; }
+  .adm-head { padding: 22px 0 14px; }
+  .adm-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -1px; }
+  .adm-sub { font-size: 13px; color: var(--txt2); margin-top: 4px; }
+  .adm-warn {
+    background: #fff6e5; border: 1px solid #f5c96b; border-radius: 12px;
+    padding: 12px 14px; font-size: 12.5px; line-height: 1.55; color: #6b4a00; margin: 14px 0 18px;
+  }
+  .adm-warn strong { display: block; margin-bottom: 4px; color: #4a3300; }
+  .admin-tabs { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+  .admin-tab {
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+    padding: 8px 14px; font-family: inherit; font-size: 13px; font-weight: 600;
+    color: var(--txt2); cursor: pointer;
+  }
+  .admin-tab.active { background: var(--txt); color: #fff; border-color: var(--txt); }
+  .admin-pane { display: none; }
+  .admin-section-lbl {
+    font-size: 10px; font-weight: 700; color: var(--txt3);
+    letter-spacing: 1px; text-transform: uppercase; margin: 20px 0 10px;
+  }
+  .admin-note {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 11px 13px; font-size: 12.5px; line-height: 1.55; color: var(--txt2);
+  }
+  .admin-empty { text-align: center; padding: 40px 20px; color: var(--txt3); font-size: 13px; }
+  .admin-recent-row {
+    display: flex; align-items: center; gap: 10px; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px;
+  }
+  .admin-recent-ico {
+    width: 32px; height: 32px; border-radius: 9px; font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .admin-recent-name { font-size: 13px; font-weight: 600; }
+  .admin-recent-sub { font-size: 11px; color: var(--txt3); }
+  .admin-recent-badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; }
+  .admin-recent-badge.on { background: rgba(0,184,118,0.1); color: var(--green); }
+  .admin-recent-badge.off { background: rgba(245,158,11,0.1); color: var(--amber); }
+  .admin-place-geo { font-size: 11px; color: var(--txt3); margin-top: 3px; }
+  .admin-crowd-val { font-size: 11px; font-weight: 700; }
+  .adm-tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .adm-tools button, .adm-tools label {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+    padding: 9px 14px; font-family: inherit; font-size: 13px; font-weight: 600;
+    color: var(--txt); cursor: pointer;
+  }
+  .adm-tools .danger { color: var(--red); border-color: rgba(239,68,68,0.3); }
+  .adm-tools input[type=file] { display: none; }
+</style>
+</head>
+<body>
+<div class="adm-wrap">
+
+  <div class="adm-head">
+    <div class="adm-title">SALGO · Carga de lugares</div>
+    <div class="adm-sub">Herramienta interna · <a href="index.html">volver a la app</a></div>
+  </div>
+
+  <div class="adm-warn">
+    <strong>⚠️ Esto guarda solo en esta computadora</strong>
+    Los lugares que cargues acá quedan en este navegador, no en un servidor. Nadie más
+    los ve, y se pierden si borrás los datos del sitio. Usá <b>Exportar</b> para
+    guardarte una copia.<br><br>
+    Tampoco hay control de acceso: no existe login porque un login hecho solo en el
+    navegador no protege nada. El acceso real por usuario llega junto con el backend.
+  </div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab active" data-tab="dashboard">📊 Resumen</button>
+    <button class="admin-tab" data-tab="lugares">📍 Lugares</button>
+    <button class="admin-tab" data-tab="nuevo">➕ Nuevo</button>
+    <button class="admin-tab" data-tab="afluencia">🔥 Afluencia</button>
+  </div>
+
+  <div class="admin-pane" data-pane="dashboard">
+    <div class="admin-stats" id="adm-stats"></div>
+    <div id="adm-recent"></div>
+    <div class="adm-tools">
+      <button data-action="exportar">⬇️ Exportar JSON</button>
+      <label>⬆️ Importar JSON<input type="file" id="adm-import" accept="application/json"></label>
+      <button data-action="restaurar">♻️ Restaurar los 30 de MdP</button>
+      <button class="danger" data-action="borrar-todo">🗑️ Borrar todo</button>
+    </div>
+  </div>
+
+  <div class="admin-pane" data-pane="lugares">
+    <div id="adm-places-list"></div>
+  </div>
+
+  <div class="admin-pane" data-pane="nuevo">
+    <div class="admin-form-card">
+      <div class="admin-form-title" id="adm-form-title">Nuevo lugar</div>
+
+      <label class="admin-form-lbl">Nombre *</label>
+      <input class="admin-form-inp" id="adm-name" placeholder="Ej: Club Havana">
+
+      <div class="admin-form-row">
+        <div>
+          <label class="admin-form-lbl">Tipo</label>
+          <select class="admin-form-sel" id="adm-type">
+            <option>Boliche</option><option>Bar</option><option>Lounge</option>
+            <option>Pub</option><option>Evento</option>
+          </select>
+        </div>
+        <div>
+          <label class="admin-form-lbl">Emoji</label>
+          <input class="admin-form-inp" id="adm-ico" placeholder="🎛️" maxlength="4">
+        </div>
+      </div>
+
+      <label class="admin-form-lbl">Ciudad</label>
+      <input class="admin-form-inp" id="adm-city" placeholder="Mar del Plata" value="Mar del Plata">
+
+      <label class="admin-form-lbl">Género musical</label>
+      <input class="admin-form-inp" id="adm-genre" placeholder="Techno / House">
+
+      <label class="admin-form-lbl">Dirección</label>
+      <input class="admin-form-inp" id="adm-addr" placeholder="Av. Colón 1200, Mar del Plata">
+
+      <!-- La distancia ya no se carga a mano: la calcula la app contra la
+           ubicación real del usuario. Lo que sí hace falta son las coordenadas. -->
+      <div class="admin-form-row">
+        <div>
+          <label class="admin-form-lbl">Latitud *</label>
+          <input class="admin-form-inp" id="adm-lat" placeholder="-38.0055" inputmode="decimal">
+        </div>
+        <div>
+          <label class="admin-form-lbl">Longitud *</label>
+          <input class="admin-form-inp" id="adm-lng" placeholder="-57.5426" inputmode="decimal">
+        </div>
+      </div>
+      <div class="admin-note" style="margin-bottom:12px;">
+        📍 Sin coordenadas el lugar no aparece en el mapa ni se le puede calcular
+        la distancia. Para conseguirlas: abrí
+        <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">openstreetmap.org</a>,
+        buscá la dirección, hacé clic derecho sobre el punto y elegí "Mostrar dirección".
+      </div>
+
+      <div class="admin-form-row">
+        <div>
+          <label class="admin-form-lbl">Horario</label>
+          <input class="admin-form-inp" id="adm-hrs" placeholder="23–05h">
+        </div>
+        <div>
+          <label class="admin-form-lbl">Entrada</label>
+          <input class="admin-form-inp" id="adm-ent" placeholder="$3.500">
+        </div>
+      </div>
+
+      <label class="admin-form-lbl">Consumo mínimo</label>
+      <input class="admin-form-inp" id="adm-cons" placeholder="$1.200">
+
+      <label class="admin-form-lbl">Afluencia: <span class="admin-range-val" id="adm-crowd-val">50%</span></label>
+      <input type="range" class="admin-form-range" id="adm-crowd" min="0" max="100" value="50">
+
+      <label class="admin-form-lbl">Rating: <span class="admin-range-val" id="adm-rat-val">★ 4.5</span></label>
+      <input type="range" class="admin-form-range" id="adm-rat" min="10" max="50" value="45">
+
+      <div class="admin-form-row">
+        <div>
+          <label class="admin-form-lbl">Color del pin</label>
+          <select class="admin-form-sel" id="adm-color">
+            <option value="#ff2d78">🩷 Rosa</option>
+            <option value="#b44dff">💜 Violeta</option>
+            <option value="#00e5ff">🩵 Cyan</option>
+            <option value="#ffaa00">🟡 Amber</option>
+            <option value="#00f5a0">💚 Verde</option>
+          </select>
+        </div>
+        <div>
+          <label class="admin-form-lbl">Estado</label>
+          <select class="admin-form-sel" id="adm-open">
+            <option value="true">✅ Abierto</option>
+            <option value="false">🕐 Hoy abre</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="admin-save-btn" data-action="guardar">💾 Guardar lugar</button>
+      <button class="admin-cancel-btn" data-action="limpiar">Limpiar formulario</button>
+    </div>
+  </div>
+
+  <div class="admin-pane" data-pane="afluencia">
+    <div class="admin-note" style="margin-bottom:14px;">
+      Movés la barra y tocás OK para actualizar cuán lleno está cada lugar.
+    </div>
+    <div id="adm-crowd-list"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { initAdmin } from './src/js/admin.js';
+  initAdmin();
+</script>
+</body>
+</html>

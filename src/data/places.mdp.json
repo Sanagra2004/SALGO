@@ -1,0 +1,1088 @@
+[
+ {
+  "id": 1,
+  "name": "Samsara Beach",
+  "city": "Mar del Plata",
+  "type": "Boliche · Electrónica / House",
+  "badge": "ELECTRÓNICA · HOUSE",
+  "addr": "RP11 4866, Playa Grande, Mar del Plata",
+  "lat": -38.024321,
+  "lng": -57.541179,
+  "geo": "aprox",
+  "entrada": "$5.000",
+  "consumo": "$1.500",
+  "horario": "22–06h",
+  "rating": 4.8,
+  "crowd": 85,
+  "going": 412,
+  "open": true,
+  "icon": "🌊",
+  "genre": "Electrónica / House",
+  "cat": [
+   "Boliche",
+   "Techno"
+  ],
+  "color1": "#ff2d55",
+  "color2": "#b44dff",
+  "msgs": [
+   {
+    "name": "Caro M.",
+    "av": "CM",
+    "color": "#ff2d55",
+    "txt": "Frente al mar, el mejor afterbeach de MdP 🌊"
+   },
+   {
+    "name": "Tomi G.",
+    "av": "TG",
+    "color": "#b44dff",
+    "txt": "El DJ de esta noche 🔥"
+   }
+  ]
+ },
+ {
+  "id": 2,
+  "name": "Luna Disco",
+  "city": "Mar del Plata",
+  "type": "Boliche · Cumbia / RKT / Pop",
+  "badge": "CUMBIA · RKT",
+  "addr": "Av. Independencia 4443, Mar del Plata",
+  "lat": -38.018318,
+  "lng": -57.570848,
+  "geo": "exacta",
+  "entrada": "$4.000",
+  "consumo": "$1.200",
+  "horario": "01–07h",
+  "rating": 4.6,
+  "crowd": 92,
+  "going": 580,
+  "open": false,
+  "icon": "🌙",
+  "genre": "Cumbia / RKT",
+  "cat": [
+   "Boliche",
+   "Cumbia"
+  ],
+  "color1": "#ffaa00",
+  "color2": "#ff6b00",
+  "msgs": [
+   {
+    "name": "Facu P.",
+    "av": "FP",
+    "color": "#ffaa00",
+    "txt": "La catedral de la noche marplatense 👑"
+   },
+   {
+    "name": "Vale S.",
+    "av": "VS",
+    "color": "#ff4444",
+    "txt": "Somos 8, ¿alguien tiene mesa?"
+   }
+  ]
+ },
+ {
+  "id": 3,
+  "name": "Club Quba",
+  "city": "Mar del Plata",
+  "type": "Boliche / Restó · Variado",
+  "badge": "CLUB · VARIADO",
+  "addr": "Blvd. Marítimo P.P. Ramos 4851",
+  "lat": -38.020871,
+  "lng": -57.527985,
+  "geo": "exacta",
+  "entrada": "$4.500",
+  "consumo": "$1.800",
+  "horario": "20–05h",
+  "rating": 4.5,
+  "crowd": 68,
+  "going": 280,
+  "open": true,
+  "icon": "🏖️",
+  "genre": "Variado / Pop",
+  "cat": [
+   "Boliche",
+   "Bar"
+  ],
+  "color1": "#00e5ff",
+  "color2": "#0080ff",
+  "msgs": [
+   {
+    "name": "Meli R.",
+    "av": "MR",
+    "color": "#00e5ff",
+    "txt": "Vista al mar impresionante 😍"
+   },
+   {
+    "name": "Bren G.",
+    "av": "BG",
+    "color": "#3b82f6",
+    "txt": "Dos pistas de baile, inmejorable"
+   }
+  ]
+ },
+ {
+  "id": 4,
+  "name": "La Bodeguita",
+  "city": "Mar del Plata",
+  "type": "Bar · Tropical / Mojitos",
+  "badge": "BAR · CUBANO",
+  "addr": "Güemes 3700, Mar del Plata",
+  "lat": -38.02192,
+  "lng": -57.546575,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$900",
+  "horario": "20–03h",
+  "rating": 4.7,
+  "crowd": 55,
+  "going": 165,
+  "open": true,
+  "icon": "🍹",
+  "genre": "Tropical / Salsa",
+  "cat": [
+   "Bar",
+   "Cumbia"
+  ],
+  "color1": "#00f5a0",
+  "color2": "#00b876",
+  "msgs": [
+   {
+    "name": "Agus F.",
+    "av": "AF",
+    "color": "#00f5a0",
+    "txt": "Los mejores mojitos de MdP 🍹"
+   },
+   {
+    "name": "Sofi L.",
+    "av": "SL",
+    "color": "#ffaa00",
+    "txt": "Miércoles las chicas toman gratis 💃"
+   }
+  ]
+ },
+ {
+  "id": 5,
+  "name": "Antares Cervecería",
+  "city": "Mar del Plata",
+  "type": "Bar · Cerveza Artesanal",
+  "badge": "CERVECERÍA · CRAFT",
+  "addr": "Av. Juan B. Justo 3964, Mar del Plata",
+  "lat": -38.013957,
+  "lng": -57.578018,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$800",
+  "horario": "18–02h",
+  "rating": 4.8,
+  "crowd": 42,
+  "going": 140,
+  "open": true,
+  "icon": "🍺",
+  "genre": "Rock / Blues",
+  "cat": [
+   "Bar",
+   "Rock"
+  ],
+  "color1": "#f59e0b",
+  "color2": "#ff8c00",
+  "msgs": [
+   {
+    "name": "Maxi V.",
+    "av": "MV",
+    "color": "#f59e0b",
+    "txt": "La Roja Frambuesa es brutal 🍺"
+   },
+   {
+    "name": "Diego P.",
+    "av": "DP",
+    "color": "#ff4444",
+    "txt": "Mejores cervezas artesanales de la costa"
+   }
+  ]
+ },
+ {
+  "id": 6,
+  "name": "Barwin",
+  "city": "Mar del Plata",
+  "type": "Bar · Previa / Tragos",
+  "badge": "BAR · PREVIA",
+  "addr": "Av. Colón 2600, Mar del Plata",
+  "lat": -38.003655,
+  "lng": -57.550158,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$1.000",
+  "horario": "19–04h",
+  "rating": 4.4,
+  "crowd": 38,
+  "going": 98,
+  "open": true,
+  "icon": "🎵",
+  "genre": "Pop / Electrónica",
+  "cat": [
+   "Bar"
+  ],
+  "color1": "#b44dff",
+  "color2": "#7c3aed",
+  "msgs": [
+   {
+    "name": "Romi C.",
+    "av": "RC",
+    "color": "#b44dff",
+    "txt": "El mejor lugar para la previa 🥂"
+   },
+   {
+    "name": "Santi M.",
+    "av": "SM",
+    "color": "#00e5ff",
+    "txt": "Abierto jueves a domingo"
+   }
+  ]
+ },
+ {
+  "id": 7,
+  "name": "El Container",
+  "city": "Mar del Plata",
+  "type": "Bar / Cervecería · Playa",
+  "badge": "BAR · PLAYA",
+  "addr": "Av. Martínez de Hoz 5550, Mar del Plata",
+  "lat": -38.071787,
+  "lng": -57.547589,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$700",
+  "horario": "16–02h",
+  "rating": 4.6,
+  "crowd": 30,
+  "going": 85,
+  "open": true,
+  "icon": "📦",
+  "genre": "Rock / Pop",
+  "cat": [
+   "Bar",
+   "Rock"
+  ],
+  "color1": "#22c55e",
+  "color2": "#00b876",
+  "msgs": [
+   {
+    "name": "Flor A.",
+    "av": "FA",
+    "color": "#22c55e",
+    "txt": "Vista al mar increíble, imperdible 🌊"
+   }
+  ]
+ },
+ {
+  "id": 8,
+  "name": "Cheverry Cervecería",
+  "city": "Mar del Plata",
+  "type": "Cervecería · Rock / Folk",
+  "badge": "CERVECERÍA",
+  "addr": "Olavarría 2951, Mar del Plata",
+  "lat": -38.015435,
+  "lng": -57.543157,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$750",
+  "horario": "17–01h",
+  "rating": 4.7,
+  "crowd": 25,
+  "going": 72,
+  "open": true,
+  "icon": "🍻",
+  "genre": "Rock / Folk",
+  "cat": [
+   "Bar",
+   "Rock"
+  ],
+  "color1": "#f59e0b",
+  "color2": "#ffaa00",
+  "msgs": [
+   {
+    "name": "Pablo G.",
+    "av": "PG",
+    "color": "#f59e0b",
+    "txt": "Cervezas premiadas nacionales 🏆"
+   }
+  ]
+ },
+ {
+  "id": 9,
+  "name": "Límite de Pista",
+  "city": "Mar del Plata",
+  "type": "Boliche · Electrónica / Techno",
+  "badge": "TECHNO · ELECTRO",
+  "addr": "Córdoba 2900, Mar del Plata",
+  "lat": -38.008998,
+  "lng": -57.554492,
+  "geo": "exacta",
+  "entrada": "$3.500",
+  "consumo": "$1.200",
+  "horario": "00–07h",
+  "rating": 4.5,
+  "crowd": 70,
+  "going": 230,
+  "open": false,
+  "icon": "🎛️",
+  "genre": "Techno / House",
+  "cat": [
+   "Boliche",
+   "Techno"
+  ],
+  "color1": "#ff2d55",
+  "color2": "#b44dff",
+  "msgs": [
+   {
+    "name": "DJ Marco",
+    "av": "DM",
+    "color": "#ff2d55",
+    "txt": "Esta noche sesión de techno 4hs 🎧"
+   },
+   {
+    "name": "Ceci P.",
+    "av": "CP",
+    "color": "#b44dff",
+    "txt": "¿Hay preventa?"
+   }
+  ]
+ },
+ {
+  "id": 10,
+  "name": "Alarde",
+  "city": "Mar del Plata",
+  "type": "Bar / Cervecería · Craft",
+  "badge": "BAR · CRAFT",
+  "addr": "Olavarría 3400, Mar del Plata",
+  "lat": -38.01902,
+  "lng": -57.545674,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$800",
+  "horario": "17–02h",
+  "rating": 4.6,
+  "crowd": 35,
+  "going": 90,
+  "open": true,
+  "icon": "🥃",
+  "genre": "Rock / Jazz",
+  "cat": [
+   "Bar"
+  ],
+  "color1": "#00e5ff",
+  "color2": "#0080ff",
+  "msgs": [
+   {
+    "name": "Rafa T.",
+    "av": "RT",
+    "color": "#00e5ff",
+    "txt": "Imperdible en la zona de Olavarría 🎸"
+   }
+  ]
+ },
+ {
+  "id": 11,
+  "name": "Barrio Mitre Bar",
+  "city": "Mar del Plata",
+  "type": "Bar · Bandas en vivo / Tragos",
+  "badge": "BAR · ROCK LIVE",
+  "addr": "Av. Mitre 1800, Mar del Plata",
+  "lat": -38.012074,
+  "lng": -57.559909,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$900",
+  "horario": "20–04h",
+  "rating": 4.5,
+  "crowd": 48,
+  "going": 110,
+  "open": true,
+  "icon": "🎸",
+  "genre": "Rock / Blues",
+  "cat": [
+   "Bar",
+   "Rock"
+  ],
+  "color1": "#ef4444",
+  "color2": "#dc2626",
+  "msgs": [
+   {
+    "name": "Ezequiel E.",
+    "av": "EE",
+    "color": "#ef4444",
+    "txt": "Bandas en vivo, alta coctelería, imperdible 🎸"
+   }
+  ]
+ },
+ {
+  "id": 12,
+  "name": "Parador Varese",
+  "city": "Mar del Plata",
+  "type": "Parador · House / Electrónica",
+  "badge": "PARADOR · HOUSE",
+  "addr": "Complejo Balneario Varese, Mar del Plata",
+  "lat": -38.014176,
+  "lng": -57.530493,
+  "geo": "aprox",
+  "entrada": "$3.000",
+  "consumo": "$1.500",
+  "horario": "21–06h",
+  "rating": 4.4,
+  "crowd": 60,
+  "going": 195,
+  "open": false,
+  "icon": "🏊",
+  "genre": "House / Electrónica",
+  "cat": [
+   "Boliche",
+   "Techno"
+  ],
+  "color1": "#00e5ff",
+  "color2": "#0080ff",
+  "msgs": [
+   {
+    "name": "Pau M.",
+    "av": "PM",
+    "color": "#00e5ff",
+    "txt": "Frente al mar, piscina y música 🌊"
+   }
+  ]
+ },
+ {
+  "id": 13,
+  "name": "Tequila Bar",
+  "city": "Mar del Plata",
+  "type": "Bar · Latino / Reggaeton",
+  "badge": "BAR · LATINO",
+  "addr": "Diagonal Alberdi 2350, Mar del Plata",
+  "lat": -37.999115,
+  "lng": -57.543118,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$800",
+  "horario": "21–04h",
+  "rating": 4.3,
+  "crowd": 45,
+  "going": 88,
+  "open": true,
+  "icon": "🍸",
+  "genre": "Latino / Reggaeton",
+  "cat": [
+   "Bar",
+   "Cumbia"
+  ],
+  "color1": "#ff9f0a",
+  "color2": "#ff6b00",
+  "msgs": [
+   {
+    "name": "Gabi R.",
+    "av": "GR",
+    "color": "#ff9f0a",
+    "txt": "Los tragos son increíbles 🍸"
+   }
+  ]
+ },
+ {
+  "id": 14,
+  "name": "Otro Bar MdP",
+  "city": "Mar del Plata",
+  "type": "Bar · Indie / Rock Alternativo",
+  "badge": "BAR · INDIE",
+  "addr": "San Luis 1400, Mar del Plata",
+  "lat": -37.996365,
+  "lng": -57.545676,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$700",
+  "horario": "20–03h",
+  "rating": 4.4,
+  "crowd": 33,
+  "going": 65,
+  "open": true,
+  "icon": "🎶",
+  "genre": "Indie / Rock Alt.",
+  "cat": [
+   "Bar",
+   "Rock"
+  ],
+  "color1": "#af52de",
+  "color2": "#7c3aed",
+  "msgs": [
+   {
+    "name": "Juan P.",
+    "av": "JP",
+    "color": "#af52de",
+    "txt": "Ambiente alternativo único en MdP 🎶"
+   }
+  ]
+ },
+ {
+  "id": 15,
+  "name": "Soho Bar",
+  "city": "Mar del Plata",
+  "type": "Bar / Club · Pop / RKT",
+  "badge": "BAR · POP",
+  "addr": "Av. Constitución 5900, Mar del Plata",
+  "lat": -37.961152,
+  "lng": -57.562618,
+  "geo": "exacta",
+  "entrada": "$2.500",
+  "consumo": "$1.000",
+  "horario": "23–06h",
+  "rating": 4.3,
+  "crowd": 78,
+  "going": 210,
+  "open": false,
+  "icon": "✨",
+  "genre": "Pop / RKT",
+  "cat": [
+   "Boliche",
+   "Cumbia"
+  ],
+  "color1": "#ff2d55",
+  "color2": "#ff6b8a",
+  "msgs": [
+   {
+    "name": "Nat V.",
+    "av": "NV",
+    "color": "#ff2d55",
+    "txt": "Ambiente increíble, siempre lleno 🎉"
+   }
+  ]
+ },
+ {
+  "id": 16,
+  "name": "Waikiki Beach Bar",
+  "city": "Mar del Plata",
+  "type": "Bar · Beach / Tropical",
+  "badge": "BAR · BEACH",
+  "addr": "Balneario Waikiki, Playa Varese",
+  "lat": -38.014176,
+  "lng": -57.530493,
+  "geo": "aprox",
+  "entrada": "Sin entrada",
+  "consumo": "$900",
+  "horario": "12–23h",
+  "rating": 4.5,
+  "crowd": 40,
+  "going": 75,
+  "open": true,
+  "icon": "🌴",
+  "genre": "Tropical / Chill",
+  "cat": [
+   "Bar"
+  ],
+  "color1": "#00f5a0",
+  "color2": "#00e5ff",
+  "msgs": [
+   {
+    "name": "Luli M.",
+    "av": "LM",
+    "color": "#00f5a0",
+    "txt": "Ideal para el atardecer en la playa 🌅"
+   }
+  ]
+ },
+ {
+  "id": 17,
+  "name": "Havana Club MdP",
+  "city": "Mar del Plata",
+  "type": "Bar · Cubano / Salsa",
+  "badge": "BAR · CUBANO",
+  "addr": "Rivadavia 2200, Mar del Plata",
+  "lat": -38.002473,
+  "lng": -57.543468,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$800",
+  "horario": "20–03h",
+  "rating": 4.3,
+  "crowd": 28,
+  "going": 55,
+  "open": true,
+  "icon": "🎺",
+  "genre": "Salsa / Son Cubano",
+  "cat": [
+   "Bar",
+   "Cumbia"
+  ],
+  "color1": "#22c55e",
+  "color2": "#00b876",
+  "msgs": [
+   {
+    "name": "Mario S.",
+    "av": "MS",
+    "color": "#22c55e",
+    "txt": "Salsa en vivo los fines de semana 🎺"
+   }
+  ]
+ },
+ {
+  "id": 18,
+  "name": "La Biela MdP",
+  "city": "Mar del Plata",
+  "type": "Bar Clásico · Cocktails",
+  "badge": "BAR · CLÁSICO",
+  "addr": "Diagonal Pueyrredón 1740, Mar del Plata",
+  "lat": -37.998695,
+  "lng": -57.55146,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$900",
+  "horario": "19–02h",
+  "rating": 4.4,
+  "crowd": 32,
+  "going": 60,
+  "open": true,
+  "icon": "🥂",
+  "genre": "Jazz / Clásico",
+  "cat": [
+   "Bar"
+  ],
+  "color1": "#f59e0b",
+  "color2": "#d97706",
+  "msgs": [
+   {
+    "name": "Clara V.",
+    "av": "CV",
+    "color": "#f59e0b",
+    "txt": "El mejor lugar para una copa elegante 🥂"
+   }
+  ]
+ },
+ {
+  "id": 19,
+  "name": "Playa Grande Club",
+  "city": "Mar del Plata",
+  "type": "Club de Playa · House",
+  "badge": "BEACH CLUB",
+  "addr": "Playa Grande, Mar del Plata",
+  "lat": -38.024321,
+  "lng": -57.541179,
+  "geo": "aprox",
+  "entrada": "$4.000",
+  "consumo": "$2.000",
+  "horario": "20–06h",
+  "rating": 4.6,
+  "crowd": 75,
+  "going": 320,
+  "open": false,
+  "icon": "🏄",
+  "genre": "House / Deep",
+  "cat": [
+   "Boliche",
+   "Techno"
+  ],
+  "color1": "#00e5ff",
+  "color2": "#0080ff",
+  "msgs": [
+   {
+    "name": "Leo B.",
+    "av": "LB",
+    "color": "#00e5ff",
+    "txt": "La opción más premium de Playa Grande 🌊"
+   }
+  ]
+ },
+ {
+  "id": 20,
+  "name": "Desnivel",
+  "city": "Mar del Plata",
+  "type": "Bar Cultural · Rock / Folk",
+  "badge": "BAR · CULTURAL",
+  "addr": "Belgrano 2300, Mar del Plata",
+  "lat": -38.002707,
+  "lng": -57.545091,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$650",
+  "horario": "18–01h",
+  "rating": 4.5,
+  "crowd": 22,
+  "going": 45,
+  "open": true,
+  "icon": "🎭",
+  "genre": "Rock / Folk",
+  "cat": [
+   "Bar",
+   "Rock"
+  ],
+  "color1": "#af52de",
+  "color2": "#7c3aed",
+  "msgs": [
+   {
+    "name": "Vera C.",
+    "av": "VC",
+    "color": "#af52de",
+    "txt": "Arte y música en vivo, ambiente único 🎭"
+   }
+  ]
+ },
+ {
+  "id": 21,
+  "name": "Bruto Playa Grande",
+  "city": "Mar del Plata",
+  "type": "Boliche · Pop / Electrónica / RKT",
+  "badge": "BOLICHE · BRUTO",
+  "addr": "Escaleras Playa Grande, Mar del Plata",
+  "lat": -38.024321,
+  "lng": -57.541179,
+  "geo": "aprox",
+  "entrada": "$4.500",
+  "consumo": "$1.500",
+  "horario": "23–06h",
+  "rating": 4.9,
+  "crowd": 95,
+  "going": 620,
+  "open": false,
+  "icon": "🔥",
+  "genre": "Pop / RKT / Electrónica",
+  "cat": [
+   "Boliche",
+   "Cumbia",
+   "Techno"
+  ],
+  "color1": "#ff2d55",
+  "color2": "#ff6b00",
+  "msgs": [
+   {
+    "name": "Fede R.",
+    "av": "FR",
+    "color": "#ff2d55",
+    "txt": "El mejor boliche de MdP sin dudas 🔥"
+   },
+   {
+    "name": "Nati G.",
+    "av": "NG",
+    "color": "#ff6b00",
+    "txt": "Los queves son una religión acá 🙌"
+   },
+   {
+    "name": "Maxi S.",
+    "av": "MS",
+    "color": "#b44dff",
+    "txt": "DJ internacional esta noche 🎧"
+   }
+  ]
+ },
+ {
+  "id": 22,
+  "name": "Señor Juan",
+  "city": "Mar del Plata",
+  "type": "Bar · Tragos de autor / Coctelería",
+  "badge": "BAR · COCTELERÍA",
+  "addr": "Av. Alem 3200, Mar del Plata",
+  "lat": -38.024605,
+  "lng": -57.529336,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$1.100",
+  "horario": "20–04h",
+  "rating": 4.7,
+  "crowd": 58,
+  "going": 145,
+  "open": true,
+  "icon": "🍹",
+  "genre": "Jazz / Soul",
+  "cat": [
+   "Bar"
+  ],
+  "color1": "#f59e0b",
+  "color2": "#d97706",
+  "msgs": [
+   {
+    "name": "Romi V.",
+    "av": "RV",
+    "color": "#f59e0b",
+    "txt": "Los mejores tragos de autor de MdP 🍹"
+   },
+   {
+    "name": "Juli P.",
+    "av": "JP",
+    "color": "#22c55e",
+    "txt": "El bartender es un artista, pedile el especial"
+   }
+  ]
+ },
+ {
+  "id": 23,
+  "name": "Bruto Bar",
+  "city": "Mar del Plata",
+  "type": "Bar / Restó · Variado",
+  "badge": "BAR · BRUTO",
+  "addr": "Paseo Victoria Ocampo, Playa Grande",
+  "lat": -38.028633,
+  "lng": -57.532561,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$1.200",
+  "horario": "12–04h",
+  "rating": 4.7,
+  "crowd": 50,
+  "going": 180,
+  "open": true,
+  "icon": "🥩",
+  "genre": "Variado",
+  "cat": [
+   "Bar"
+  ],
+  "color1": "#ff4500",
+  "color2": "#ff2d55",
+  "msgs": [
+   {
+    "name": "Leo B.",
+    "av": "LB",
+    "color": "#ff4500",
+    "txt": "De día restó, de noche el mejor ambiente 🌊"
+   }
+  ]
+ },
+ {
+  "id": 24,
+  "name": "Cuba Boliche",
+  "city": "Mar del Plata",
+  "type": "Boliche · Cumbia / Latino",
+  "badge": "BOLICHE · CUMBIA",
+  "addr": "Av. Constitución 5780, Mar del Plata",
+  "lat": -37.961767,
+  "lng": -57.561436,
+  "geo": "exacta",
+  "entrada": "$3.500",
+  "consumo": "$1.200",
+  "horario": "01–07h",
+  "rating": 4.5,
+  "crowd": 80,
+  "going": 380,
+  "open": false,
+  "icon": "🕺",
+  "genre": "Cumbia / Latino / RKT",
+  "cat": [
+   "Boliche",
+   "Cumbia"
+  ],
+  "color1": "#00b876",
+  "color2": "#00e5ff",
+  "msgs": [
+   {
+    "name": "Sole M.",
+    "av": "SM",
+    "color": "#00b876",
+    "txt": "Clásico de la noche marplatense 🕺"
+   },
+   {
+    "name": "Tomas A.",
+    "av": "TA",
+    "color": "#00e5ff",
+    "txt": "Miércoles es el día, siempre a tope"
+   }
+  ]
+ },
+ {
+  "id": 25,
+  "name": "Mr. Jones",
+  "city": "Mar del Plata",
+  "type": "Boliche · Electrónica / Rock",
+  "badge": "BOLICHE · JONES",
+  "addr": "Alem y Quintana, Mar del Plata",
+  "lat": -38.026578,
+  "lng": -57.531731,
+  "geo": "exacta",
+  "entrada": "$3.000",
+  "consumo": "$1.000",
+  "horario": "00–06h",
+  "rating": 4.4,
+  "crowd": 65,
+  "going": 210,
+  "open": false,
+  "icon": "🎸",
+  "genre": "Electrónica / Rock / Reggae",
+  "cat": [
+   "Boliche",
+   "Techno",
+   "Rock"
+  ],
+  "color1": "#7c3aed",
+  "color2": "#af52de",
+  "msgs": [
+   {
+    "name": "Cris V.",
+    "av": "CV",
+    "color": "#7c3aed",
+    "txt": "Dos ambientes: electro y rock. Ideal 🎸"
+   },
+   {
+    "name": "Bren A.",
+    "av": "BA",
+    "color": "#af52de",
+    "txt": "El piso de rock siempre revienta"
+   }
+  ]
+ },
+ {
+  "id": 26,
+  "name": "Estación Central",
+  "city": "Mar del Plata",
+  "type": "Bar / Club · Coctelería / DJ",
+  "badge": "BAR · DJ",
+  "addr": "Hipólito Yrigoyen 2875, Mar del Plata",
+  "lat": -38.007257,
+  "lng": -57.557577,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$900",
+  "horario": "20–05h",
+  "rating": 4.5,
+  "crowd": 55,
+  "going": 135,
+  "open": true,
+  "icon": "🚉",
+  "genre": "Pop / Electrónica",
+  "cat": [
+   "Bar"
+  ],
+  "color1": "#ff9f0a",
+  "color2": "#ff6b00",
+  "msgs": [
+   {
+    "name": "Pau R.",
+    "av": "PR",
+    "color": "#ff9f0a",
+    "txt": "Para bailar sin ir al boliche, perfecto 🎵"
+   }
+  ]
+ },
+ {
+  "id": 27,
+  "name": "OGham Bar",
+  "city": "Mar del Plata",
+  "type": "Bar · Cerveza / Tragos",
+  "badge": "BAR · ALEM",
+  "addr": "Leandro N. Alem 3454, Mar del Plata",
+  "lat": -38.025673,
+  "lng": -57.534142,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$800",
+  "horario": "18–03h",
+  "rating": 4.6,
+  "crowd": 40,
+  "going": 95,
+  "open": true,
+  "icon": "🍀",
+  "genre": "Rock / Pop",
+  "cat": [
+   "Bar",
+   "Rock"
+  ],
+  "color1": "#00f5a0",
+  "color2": "#00b876",
+  "msgs": [
+   {
+    "name": "Nico G.",
+    "av": "NG",
+    "color": "#00f5a0",
+    "txt": "Zona Alem con el mejor ambiente 🍀"
+   }
+  ]
+ },
+ {
+  "id": 28,
+  "name": "Torombolo",
+  "city": "Mar del Plata",
+  "type": "Bar · Rock / Indie",
+  "badge": "BAR · ROCK",
+  "addr": "Leandro N. Alem 3582, Mar del Plata",
+  "lat": -38.026615,
+  "lng": -57.534909,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$750",
+  "horario": "19–03h",
+  "rating": 4.5,
+  "crowd": 35,
+  "going": 80,
+  "open": true,
+  "icon": "🎵",
+  "genre": "Rock / Indie",
+  "cat": [
+   "Bar",
+   "Rock"
+  ],
+  "color1": "#ef4444",
+  "color2": "#dc2626",
+  "msgs": [
+   {
+    "name": "Flor S.",
+    "av": "FS",
+    "color": "#ef4444",
+    "txt": "El mejor rock indie de la zona Alem 🎵"
+   }
+  ]
+ },
+ {
+  "id": 29,
+  "name": "Proyecto Bar",
+  "city": "Mar del Plata",
+  "type": "Bar Cultural · Bandas en vivo",
+  "badge": "BAR · CULTURAL",
+  "addr": "Av. Juan B. Justo 620, Mar del Plata",
+  "lat": -38.036071,
+  "lng": -57.548788,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$700",
+  "horario": "20–03h",
+  "rating": 4.6,
+  "crowd": 30,
+  "going": 70,
+  "open": true,
+  "icon": "🎭",
+  "genre": "Rock / Bandas en vivo",
+  "cat": [
+   "Bar",
+   "Rock"
+  ],
+  "color1": "#af52de",
+  "color2": "#7c3aed",
+  "msgs": [
+   {
+    "name": "Agus M.",
+    "av": "AM",
+    "color": "#af52de",
+    "txt": "Arte, cultura y bandas en vivo cada semana 🎭"
+   }
+  ]
+ },
+ {
+  "id": 30,
+  "name": "Tiki Bar",
+  "city": "Mar del Plata",
+  "type": "Bar · Tropical / Tragos",
+  "badge": "BAR · TIKI",
+  "addr": "Leandro N. Alem 3690, Mar del Plata",
+  "lat": -38.027403,
+  "lng": -57.535551,
+  "geo": "exacta",
+  "entrada": "Sin entrada",
+  "consumo": "$850",
+  "horario": "19–04h",
+  "rating": 4.4,
+  "crowd": 42,
+  "going": 88,
+  "open": true,
+  "icon": "🌺",
+  "genre": "Tropical / Pop",
+  "cat": [
+   "Bar"
+  ],
+  "color1": "#00e5ff",
+  "color2": "#0080ff",
+  "msgs": [
+   {
+    "name": "Vale C.",
+    "av": "VC",
+    "color": "#00e5ff",
+    "txt": "Ambiente tropical, tragos increíbles 🌺"
+   }
+  ]
+ }
+]

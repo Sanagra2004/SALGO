@@ -1,0 +1,21 @@
+/* SALGO — tokens de diseño y reset.
+   Cambiá acá los colores y se propagan a toda la app. */
+
+:root {
+  --v: #ff2d78;
+  --vl: #ff6ba0;
+  --bg: #f5f5f7;
+  --bg2: #ffffff;
+  --bg3: #ededf2;
+  --txt: #0a0a14;
+  --txt2: rgba(10,10,20,0.65);
+  --txt3: rgba(10,10,20,0.38);
+  --border: rgba(10,10,20,0.09);
+  --green: #00b876;
+  --amber: #f59e0b;
+  --red: #ef4444;
+  --blue: #3b82f6;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: #f2f2f7; color: var(--txt); font-family: 'DM Sans', sans-serif; }
+
