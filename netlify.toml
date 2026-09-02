@@ -1,0 +1,39 @@
+# SALGO — configuración de Netlify.
+#
+# Las cabeceras de seguridad de acá abajo ya estaban escritas en el prototipo,
+# dentro de la pantalla "Seguridad", pero nunca se habían puesto en un archivo
+# que el servidor leyera. Ahora sí se aplican.
+
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(self), camera=(), microphone=(), payment=()"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+    # 'unsafe-inline' en script-src sigue siendo necesario mientras queden
+    # atributos onclick en el HTML. Se puede endurecer a medida que se migran
+    # a listeners (ver el puente en src/js/main.js).
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://images.unsplash.com; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+
+# El service worker no se cachea: si no, los usuarios quedan con una versión
+# vieja de la app y no hay forma de actualizarlos.
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/vendor/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# El panel de carga no se indexa en buscadores.
+[[headers]]
+  for = "/admin.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
