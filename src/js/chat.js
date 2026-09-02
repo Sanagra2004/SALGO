@@ -5,13 +5,14 @@
 // el backend (Etapa 1) — ver docs/ROADMAP.md. La app avisa esto en pantalla
 // para que nadie crea que está hablando con alguien.
 
-import { store } from './store.js';
+import { store, storeMode } from './store.js';
 import { escapeHtml, showToast, $, colorFor, initials } from './ui.js';
 import { getUserName, askName } from './profile.js';
 import { FRIENDS_DATA } from './offers.js';
 
 let currentTab = 'msgs';
 let currentPlaceId = null;
+let unsubscribe = null;
 
 function hora() {
   const d = new Date();
@@ -33,12 +34,32 @@ export function switchChatTab(tab) {
 
 export async function renderChat(placeId) {
   currentPlaceId = Number(placeId);
+
+  // Escuchamos el chat de ESTE lugar: cuando otra persona escribe, el mensaje
+  // aparece solo, sin recargar. Se corta al salir del detalle para no dejar
+  // conexiones abiertas de lugares que ya nadie está mirando.
+  unsubscribe?.();
+  unsubscribe = store.subscribe('messages:' + currentPlaceId, () => {
+    if (currentPlaceId != null) pintarMensajes(currentPlaceId);
+  });
+
   await renderOnlineAvatars(currentPlaceId);
   switchChatTab('msgs');
 
+  await pintarMensajes(currentPlaceId);
+}
+
+/** Corta la escucha del chat al salir del detalle. */
+export function stopChat() {
+  unsubscribe?.();
+  unsubscribe = null;
+  currentPlaceId = null;
+}
+
+async function pintarMensajes(placeId) {
   const el = $('detail-msgs');
   if (!el) return;
-  const msgs = await store.getMessages(currentPlaceId);
+  const msgs = await store.getMessages(placeId);
 
   if (!msgs.length) {
     el.innerHTML =
@@ -47,8 +68,14 @@ export async function renderChat(placeId) {
     return;
   }
 
-  el.innerHTML =
-    '<div class="chat-local-note">Por ahora este chat se guarda solo en tu teléfono</div>' +
+  // Con backend el chat es compartido de verdad; sin backend, cada mensaje se
+  // queda en este teléfono. Decirlo evita que alguien crea que está hablando
+  // con alguien cuando no.
+  const aviso = storeMode === 'local'
+    ? '<div class="chat-local-note">Por ahora este chat se guarda solo en tu teléfono</div>'
+    : '';
+
+  el.innerHTML = aviso +
     msgs.map((m) => {
       const mine = !!m.me;
       const color = m.color || colorFor(m.name);
@@ -69,15 +96,20 @@ export async function renderChat(placeId) {
 /** Publica un mensaje propio en el chat de un lugar. */
 export async function postOwnMessage(placeId, txt) {
   const name = getUserName() || 'Vos';
-  await store.sendMessage(Number(placeId), {
-    name,
-    av: initials(name),
-    color: colorFor(name),
-    txt,
-    me: true,
-    time: hora(),
-  });
-  if (Number(placeId) === currentPlaceId) await renderChat(placeId);
+  try {
+    await store.sendMessage(Number(placeId), {
+      name,
+      av: initials(name),
+      color: colorFor(name),
+      txt,
+      me: true,
+      time: hora(),
+    });
+  } catch (err) {
+    showToast('❌ ' + err.message);
+    return;
+  }
+  if (Number(placeId) === currentPlaceId) await pintarMensajes(placeId);
 }
 
 export async function sendMsg() {

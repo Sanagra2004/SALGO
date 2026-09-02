@@ -1,19 +1,25 @@
 // SALGO — panel de carga de lugares.
 //
-// Vive en admin.html, fuera de la app pública.
+// Vive en admin.html, fuera de la app pública, y funciona de dos formas según
+// esté configurado el backend (ver src/js/config.js):
 //
-// SOBRE LA "SEGURIDAD" QUE TENÍA ANTES: el prototipo mostraba una pantalla de
-// login que comparaba usuario y contraseña en JavaScript, contra valores
-// guardados en localStorage en texto plano. Eso no protege nada — se saltea
-// abriendo las herramientas de desarrollo del navegador — y es peor que no
-// tener nada, porque da la sensación de estar protegido.
+//   CON SERVIDOR   Hay que entrar con email y contraseña, y la cuenta tiene
+//                  que estar marcada como administradora en la base. Quién
+//                  puede hacer qué NO lo decide este archivo: lo deciden las
+//                  reglas de acceso del servidor. Aunque alguien modifique
+//                  este JavaScript desde su navegador, la base le va a
+//                  rechazar los cambios igual.
 //
-// Por eso se sacó. Hoy este panel es una herramienta local de carga: los
-// cambios se guardan solo en esta computadora y sirven para preparar
-// contenido. El control de acceso de verdad (usuarios, roles y permisos en el
-// servidor) llega con Supabase en la Etapa 1 — ver docs/ROADMAP.md.
+//   SIN SERVIDOR   Herramienta local para preparar contenido. Los cambios
+//                  quedan en esta computadora. No hay login porque no habría
+//                  nada que proteger: los datos no salen de acá.
+//
+// El prototipo tenía una tercera forma, que se eliminó: una pantalla de login
+// que comparaba la contraseña en JavaScript contra localStorage. Eso no
+// protegía nada y era peor que no tener nada, porque parecía seguro.
 
-import { store } from './store.js';
+import { store, storeMode } from './store.js';
+import { initAuth, signIn, signOut, isSignedIn, getSession } from './auth.js';
 import { escapeHtml, showToast, $, setHtml } from './ui.js';
 
 let editingId = null;
@@ -120,30 +126,37 @@ export async function savePlace() {
   const genre = val('adm-genre') || 'Variado';
   const type = val('adm-type') || 'Bar';
 
-  await store.savePlace({
-    id: editingId ?? undefined,
-    name,
-    city: val('adm-city') || 'Mar del Plata',
-    type,
-    genre,
-    badge: genre.toUpperCase(),
-    icon: val('adm-ico') || '📍',
-    addr: val('adm-addr') || 'Mar del Plata',
-    lat: Number.isFinite(lat) ? lat : null,
-    lng: Number.isFinite(lng) ? lng : null,
-    geo: 'exacta',
-    horario: val('adm-hrs') || '—',
-    entrada: val('adm-ent') || 'Sin entrada',
-    consumo: val('adm-cons') || '—',
-    crowd: parseInt(val('adm-crowd'), 10) || 0,
-    rating: Number((parseInt(val('adm-rat'), 10) / 10).toFixed(1)) || 4,
-    going: 0,
-    open: val('adm-open') === 'true',
-    color1: val('adm-color') || '#ff2d78',
-    color2: '#b44dff',
-    cat: [type],
-    msgs: [{ name: 'SALGO', av: 'SG', color: '#ff2d78', txt: '¡Bienvenidos a ' + name + '! 🎉' }],
-  });
+  const capacidad = parseInt(val('adm-cap'), 10);
+
+  try {
+    await store.savePlace({
+      id: editingId ?? undefined,
+      name,
+      city: val('adm-city') || 'Mar del Plata',
+      type,
+      genre,
+      badge: genre.toUpperCase(),
+      icon: val('adm-ico') || '📍',
+      addr: val('adm-addr') || 'Mar del Plata',
+      lat: Number.isFinite(lat) ? lat : null,
+      lng: Number.isFinite(lng) ? lng : null,
+      geo: 'exacta',
+      horario: val('adm-hrs') || '—',
+      entrada: val('adm-ent') || 'Sin entrada',
+      consumo: val('adm-cons') || '—',
+      // La capacidad es el divisor del cálculo de afluencia: si está mal, el
+      // porcentaje que ve la gente está mal.
+      capacity: Number.isFinite(capacidad) && capacidad > 0 ? capacidad : 200,
+      rating: Number((parseInt(val('adm-rat'), 10) / 10).toFixed(1)) || 4,
+      open: val('adm-open') === 'true',
+      color1: val('adm-color') || '#ff2d78',
+      color2: '#b44dff',
+      cat: [type],
+    });
+  } catch (err) {
+    showToast('❌ ' + err.message);
+    return;
+  }
 
   showToast(editingId ? '✅ Lugar actualizado' : '✅ Lugar agregado');
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
@@ -171,6 +184,7 @@ export async function editPlace(id) {
   set('adm-hrs', p.horario);
   set('adm-ent', p.entrada);
   set('adm-cons', p.consumo);
+  set('adm-cap', p.capacity ?? 200);
   set('adm-crowd', p.crowd);
   set('adm-rat', Math.round(p.rating * 10));
   set('adm-open', String(p.open));
@@ -185,10 +199,14 @@ export async function deletePlace(id) {
   const p = await store.getPlace(id);
   if (!p) return;
   if (!confirm(`¿Borrar "${p.name}"? No se puede deshacer.`)) return;
-  await store.deletePlace(id);
-  showToast('🗑️ Lugar eliminado');
-  await renderPlacesList();
-  await renderDashboard();
+  try {
+    await store.deletePlace(id);
+    showToast('🗑️ Lugar eliminado');
+    await renderPlacesList();
+    await renderDashboard();
+  } catch (err) {
+    showToast('❌ ' + err.message);
+  }
 }
 
 export function resetForm() {
@@ -196,6 +214,7 @@ export function resetForm() {
   ['adm-name', 'adm-genre', 'adm-addr', 'adm-lat', 'adm-lng', 'adm-hrs', 'adm-ent', 'adm-cons']
     .forEach((id) => { const el = $(id); if (el) el.value = ''; });
   const ico = $('adm-ico'); if (ico) ico.value = '📍';
+  const cap = $('adm-cap'); if (cap) cap.value = 200;
   const crowd = $('adm-crowd'); if (crowd) crowd.value = 50;
   const rat = $('adm-rat'); if (rat) rat.value = 45;
   syncRanges();
@@ -236,28 +255,43 @@ export async function saveCrowd(id) {
   const place = await store.getPlace(id);
   if (!place) return;
   const value = crowdDrafts[id];
-  if (value == null) { showToast('Moviste nada 🤔'); return; }
-  await store.savePlace({ ...place, crowd: value });
-  showToast('✅ ' + place.name + ': ' + value + '%');
-  await renderDashboard();
+  if (value == null) { showToast('No moviste la barra 🤔'); return; }
+  // setCrowd guarda una carga MANUAL con marca de tiempo. Le gana al cálculo
+  // automático, pero solo por 6 horas: pasado ese rato un número viejo dejaría
+  // de ser cierto, así que vuelve a mandar el automático.
+  try {
+    await store.setCrowd(id, value);
+    showToast('✅ ' + place.name + ': ' + value + '% (vale por 6 horas)');
+    await renderDashboard();
+  } catch (err) {
+    showToast('❌ ' + err.message);
+  }
 }
 
 // ---------- utilidades ----------
 
 export async function resetToSeed() {
   if (!confirm('¿Restaurar los 30 lugares de Mar del Plata? Se pierde lo que hayas cargado.')) return;
-  await store.resetToSeed();
-  showToast('✅ Lugares restaurados');
-  await renderPlacesList();
-  await renderDashboard();
+  try {
+    await store.resetToSeed();
+    showToast('✅ Lugares restaurados');
+    await renderPlacesList();
+    await renderDashboard();
+  } catch (err) {
+    showToast('❌ ' + err.message);
+  }
 }
 
 export async function deleteAll() {
   if (!confirm('¿Borrar TODOS los lugares? No se puede deshacer.')) return;
-  await store.replaceAllPlaces([]);
-  showToast('🗑️ Todos los lugares eliminados');
-  await renderPlacesList();
-  await renderDashboard();
+  try {
+    await store.replaceAllPlaces([]);
+    showToast('🗑️ Todos los lugares eliminados');
+    await renderPlacesList();
+    await renderDashboard();
+  } catch (err) {
+    showToast('❌ ' + err.message);
+  }
 }
 
 /** Exporta los lugares a un archivo JSON, para respaldo o para pasarlos a otra máquina. */
@@ -287,7 +321,65 @@ export async function importPlaces(file) {
 
 // ---------- eventos ----------
 
-export function initAdmin() {
+/**
+ * Puerta de entrada.
+ *
+ * Importante: esto NO es la seguridad. Es la interfaz. La seguridad son las
+ * reglas de acceso de la base, que se aplican del lado del servidor y no se
+ * pueden saltear desde el navegador. Acá solo decidimos qué mostrar.
+ */
+async function abrirPuerta() {
+  const login = $('adm-login');
+  const panel = $('adm-panel');
+  const avisoLocal = $('adm-modo-local');
+
+  if (storeMode === 'local') {
+    if (login) login.style.display = 'none';
+    if (avisoLocal) avisoLocal.style.display = 'block';
+    if (panel) panel.style.display = 'block';
+    return true;
+  }
+
+  if (avisoLocal) avisoLocal.style.display = 'none';
+  await initAuth();
+
+  if (!isSignedIn() || !(await store.isAdmin())) {
+    if (login) login.style.display = 'block';
+    if (panel) panel.style.display = 'none';
+    // Si entró pero no es admin, hay que decirlo: si no, parece que la
+    // contraseña estuviera mal y la persona la reintenta cien veces.
+    if (isSignedIn() && getSession()?.user?.email) {
+      setHtml('adm-login-err',
+        'Entraste como <b>' + escapeHtml(getSession().user.email) + '</b>, pero esa ' +
+        'cuenta no tiene permisos de administración. Se habilitan desde el panel ' +
+        'de Supabase (ver docs/SUPABASE.md).');
+    }
+    return false;
+  }
+
+  if (login) login.style.display = 'none';
+  if (panel) panel.style.display = 'block';
+  setHtml('adm-quien', 'Conectado como <b>' +
+    escapeHtml(getSession()?.user?.email || 'vos') + '</b>');
+  return true;
+}
+
+async function entrar() {
+  const email = ($('adm-email')?.value || '').trim();
+  const pass = $('adm-pass')?.value || '';
+  if (!email || !pass) { setHtml('adm-login-err', 'Completá email y contraseña'); return; }
+  setHtml('adm-login-err', '');
+
+  const res = await signIn(email, pass);
+  if (res.error) { setHtml('adm-login-err', escapeHtml(res.error)); return; }
+
+  if (await abrirPuerta()) {
+    await renderDashboard();
+    showToast('✅ Bienvenido');
+  }
+}
+
+export async function initAdmin() {
   document.addEventListener('click', (ev) => {
     const t = ev.target;
     const tab = t.closest('[data-tab]');
@@ -303,6 +395,12 @@ export function initAdmin() {
     if (t.closest('[data-action="restaurar"]')) resetToSeed();
     if (t.closest('[data-action="borrar-todo"]')) deleteAll();
     if (t.closest('[data-action="exportar"]')) exportPlaces();
+    if (t.closest('[data-action="entrar"]')) entrar();
+    if (t.closest('[data-action="salir"]')) signOut().then(() => location.reload());
+  });
+
+  $('adm-pass')?.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') entrar();
   });
 
   document.addEventListener('input', (ev) => {
@@ -325,5 +423,7 @@ export function initAdmin() {
   });
 
   resetForm();
-  adminTab('dashboard', document.querySelector('[data-tab="dashboard"]'));
+  if (await abrirPuerta()) {
+    adminTab('dashboard', document.querySelector('[data-tab="dashboard"]'));
+  }
 }

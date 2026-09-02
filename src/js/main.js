@@ -1,7 +1,8 @@
 // SALGO — arranque de la app y navegación entre pantallas.
 
 import { showToast, $ } from './ui.js';
-import { store } from './store.js';
+import { store, storeMode } from './store.js';
+import { initAuth, onAuthChange } from './auth.js';
 import * as places from './places.js';
 import * as cities from './cities.js';
 import * as chat from './chat.js';
@@ -179,6 +180,16 @@ async function init() {
   updateClock();
   setInterval(updateClock, 30000);
 
+  // Sesión primero: sin usuario no se puede leer nada del servidor. Con el
+  // modo anónimo esto no le pide nada a nadie, es instantáneo y silencioso.
+  // Si falla (sin señal, proyecto mal configurado), la app sigue igual con lo
+  // que tenga guardado en el navegador.
+  try {
+    await initAuth();
+  } catch (err) {
+    console.warn('[salgo] no pude iniciar sesión:', err);
+  }
+
   bindNav();
   places.bindListEvents();
   cities.bindCityEvents();
@@ -209,11 +220,21 @@ async function init() {
 
   if (!profile.getUserName()) setTimeout(profile.askName, 2000);
 
-  // Si el panel de admin cambió los lugares en otra pestaña, los recargamos.
+  // Cambios en los lugares (afluencia, alta de un lugar nuevo desde el panel)
+  // y en quién va. Con servidor, esto llega en vivo desde otras personas.
   store.subscribe('places', () => places.reload());
+  store.subscribe('going', () => places.reload());
+
+  // En modo local, el aviso llega por el evento de storage entre pestañas.
   window.addEventListener('storage', (ev) => {
     if (ev.key === 'salgo_places') location.reload();
   });
+
+  // Si la sesión cambia (entró con su cuenta, se cerró), refrescamos lo que
+  // depende de quién sos: tu "voy" y tus mensajes.
+  onAuthChange(() => places.reload());
+
+  console.info('[salgo] modo de datos:', storeMode);
 }
 
 if (document.readyState === 'loading') {

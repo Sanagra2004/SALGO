@@ -1,6 +1,6 @@
 // SALGO — listado de lugares, filtros y pantalla de detalle.
 
-import { store } from './store.js';
+import { store, isDisconnected } from './store.js';
 import { escapeHtml, showToast, $, setText, setHtml, colorFor, initials } from './ui.js';
 import { withDistances, getPosition, isPrecise } from './geo.js';
 import * as salgoMap from './map.js';
@@ -80,6 +80,20 @@ export async function reload() {
 }
 
 function emptyState(city) {
+  // Dos motivos distintos para una lista vacía. Confundirlos manda a la
+  // persona a resolver el problema equivocado: si es falta de señal, cambiar
+  // de ciudad no la ayuda en nada.
+  if (isDisconnected()) {
+    return `
+      <div class="city-empty">
+        <div class="city-empty-ico">📡</div>
+        <div class="city-empty-txt">No pude conectarme</div>
+        <div class="city-empty-sub">
+          Revisá tu conexión. En cuanto vuelva, los lugares aparecen solos.
+        </div>
+        <button class="city-empty-btn" data-action="reintentar">Reintentar</button>
+      </div>`;
+  }
   return `
     <div class="city-empty">
       <div class="city-empty-ico">🌎</div>
@@ -341,6 +355,9 @@ export async function markGoing() {
 
 export function closeDetail() {
   currentDetail = null;
+  // Cortar la escucha del chat: si no, quedan conexiones abiertas de todos los
+  // lugares que el usuario fue mirando durante la noche.
+  import('./chat.js').then(({ stopChat }) => stopChat());
   import('./main.js').then(({ showScreen }) => showScreen('home'));
   applyFilter();
 }
@@ -367,6 +384,8 @@ export function bindListEvents() {
     if (card) { openDetail(card.dataset.place); return; }
     if (ev.target.closest('[data-action="volver-mdp"]')) {
       import('./cities.js').then(({ selectCity }) => selectCity('Mar del Plata'));
+      return;
     }
+    if (ev.target.closest('[data-action="reintentar"]')) reload();
   });
 }

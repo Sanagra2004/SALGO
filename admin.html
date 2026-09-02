@@ -62,6 +62,14 @@
   }
   .adm-tools .danger { color: var(--red); border-color: rgba(239,68,68,0.3); }
   .adm-tools input[type=file] { display: none; }
+  .adm-login {
+    max-width: 380px; margin: 30px auto; background: var(--bg2);
+    border: 1px solid var(--border); border-radius: 16px; padding: 24px;
+  }
+  .adm-login-title { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+  .adm-login-sub { font-size: 13px; color: var(--txt2); margin-bottom: 18px; }
+  .adm-login-err { font-size: 12.5px; color: var(--red); margin: 8px 0; line-height: 1.5; }
+  .adm-quien { font-size: 12px; color: var(--txt3); margin-bottom: 14px; }
 </style>
 </head>
 <body>
@@ -72,14 +80,33 @@
     <div class="adm-sub">Herramienta interna · <a href="index.html">volver a la app</a></div>
   </div>
 
-  <div class="adm-warn">
-    <strong>⚠️ Esto guarda solo en esta computadora</strong>
-    Los lugares que cargues acá quedan en este navegador, no en un servidor. Nadie más
+  <!-- Solo cuando NO hay servidor configurado. -->
+  <div class="adm-warn" id="adm-modo-local" style="display:none;">
+    <strong>⚠️ Modo local: esto guarda solo en esta computadora</strong>
+    Los lugares que cargues quedan en este navegador, no en un servidor. Nadie más
     los ve, y se pierden si borrás los datos del sitio. Usá <b>Exportar</b> para
     guardarte una copia.<br><br>
-    Tampoco hay control de acceso: no existe login porque un login hecho solo en el
-    navegador no protege nada. El acceso real por usuario llega junto con el backend.
+    Tampoco hay login, porque no habría nada que proteger: los datos no salen de acá.
+    Para activar el servidor, seguí <b>docs/SUPABASE.md</b>.
   </div>
+
+  <!-- Solo cuando SÍ hay servidor. -->
+  <div class="adm-login" id="adm-login" style="display:none;">
+    <div class="adm-login-title">Entrar al panel</div>
+    <div class="adm-login-sub">
+      Necesitás una cuenta con permisos de administración.
+    </div>
+    <input class="admin-form-inp" id="adm-email" type="email"
+           placeholder="tu@email.com" autocomplete="username">
+    <input class="admin-form-inp" id="adm-pass" type="password"
+           placeholder="Contraseña" autocomplete="current-password">
+    <div class="adm-login-err" id="adm-login-err"></div>
+    <button class="admin-save-btn" data-action="entrar">Entrar</button>
+  </div>
+
+<div id="adm-panel" style="display:none;">
+
+  <div class="adm-quien" id="adm-quien"></div>
 
   <div class="admin-tabs">
     <button class="admin-tab active" data-tab="dashboard">📊 Resumen</button>
@@ -166,6 +193,14 @@
       <label class="admin-form-lbl">Consumo mínimo</label>
       <input class="admin-form-inp" id="adm-cons" placeholder="$1.200">
 
+      <label class="admin-form-lbl">Capacidad del lugar (personas)</label>
+      <input class="admin-form-inp" id="adm-cap" type="number" min="1" placeholder="200" value="200">
+      <div class="admin-note" style="margin-bottom:12px;">
+        🔥 De acá sale el porcentaje de afluencia: se divide la gente que marcó
+        que va por esta capacidad. Si el número está mal, el "% lleno" que ve
+        todo el mundo está mal. Poné el dato real del local.
+      </div>
+
       <label class="admin-form-lbl">Afluencia: <span class="admin-range-val" id="adm-crowd-val">50%</span></label>
       <input type="range" class="admin-form-range" id="adm-crowd" min="0" max="100" value="50">
 
@@ -199,15 +234,25 @@
 
   <div class="admin-pane" data-pane="afluencia">
     <div class="admin-note" style="margin-bottom:14px;">
-      Movés la barra y tocás OK para actualizar cuán lleno está cada lugar.
+      La afluencia se calcula sola con la gente que marcó que va. Acá la podés
+      <b>pisar a mano</b> cuando sabés mejor que el cálculo — por ejemplo si
+      estás en la puerta del local. La carga manual vale <b>6 horas</b> y después
+      vuelve el automático, para que un número viejo no quede mintiendo.
     </div>
     <div id="adm-crowd-list"></div>
   </div>
+
+  <div class="adm-tools" style="margin-top:26px;">
+    <button data-action="salir">Cerrar sesión</button>
+  </div>
+
+</div><!-- /adm-panel -->
 
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script src="vendor/supabase/supabase.js"></script>
 <script type="module">
   import { initAdmin } from './src/js/admin.js';
   initAdmin();
