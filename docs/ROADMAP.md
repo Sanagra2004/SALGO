@@ -19,37 +19,34 @@ Netlify para publicar).
 
 ---
 
-## 🔨 Etapa 1 — El servidor *(la más importante)*
+## ✅ Etapa 1 — El servidor (hecha, falta enchufarla)
 
-Es la que convierte a SALGO en una app de verdad. Sin esto, cada usuario está
+Es la que convierte a SALGO en una app de verdad: sin esto, cada usuario está
 solo en su propia copia.
 
-**Qué se gana:**
+**Qué quedó listo:**
 
-- El **chat de cada lugar** pasa a ser real: escribís y los demás lo ven.
-- El **"voy esta noche"** se comparte: ves cuánta gente va posta.
-- La **afluencia** se actualiza para todos a la vez.
-- **Cuentas de usuario** con email y contraseña de verdad.
-- El **panel de administración** se puede usar desde cualquier lado, con acceso
-  por usuario, y los cambios los ven todos al instante.
-- **SALGO IA** se conecta a una IA real, con la clave guardada en el servidor.
+- **Base de datos completa** con las tablas de lugares, perfiles, mensajes,
+  quién va y encargados de local (`supabase/migrations/`).
+- **Reglas de acceso probadas.** 41 verificaciones automáticas que confirman que
+  nadie puede leer perfiles ajenos, escribir en nombre de otro, editar lugares
+  que no le corresponden ni marcarse como administrador. Se corren con
+  `./supabase/test.sh`.
+- **Chat compartido y en vivo.** Escribís y aparece en el teléfono de los demás
+  sin recargar.
+- **"Voy esta noche" compartido**, con la afluencia calculándose sola.
+- **Cuentas sin registro obligatorio.** Cuenta anónima al entrar; el email se
+  pide solo cuando hace falta.
+- **Panel de administración con acceso real**, por email y contraseña, con
+  permisos que se aplican del lado del servidor.
+- **Modo local intacto.** Si el servidor no está configurado o se cae, la app
+  sigue andando con lo que tenga guardado en el navegador.
 
-**Con qué:** **Supabase**. Base de datos, cuentas de usuario, tiempo real y
-almacenamiento de fotos, todo junto. Tiene un plan gratuito que alcanza y sobra
-para arrancar, y usa SQL estándar, así que no quedamos atados a esa empresa: si
-mañana conviene mudarse, los datos se llevan.
+**Lo que falta:** crear el proyecto de Supabase y pegar dos claves. Son unos
+20 minutos y está explicado paso a paso en **[SUPABASE.md](SUPABASE.md)**.
 
-**Trabajo:** ya está la mitad hecha. Como toda la app pasa por `store.js`, hay
-que escribir un archivo nuevo con los mismos métodos apuntando a Supabase, y
-cambiar una línea. Lo que lleva tiempo es el resto: diseñar las tablas, las
-reglas de quién puede ver y escribir qué, las cuentas de usuario y la función
-del servidor que habla con la IA.
-
-**Además:** implementar los controles de [SEGURIDAD.md](SEGURIDAD.md), que hasta
-ahora no se podían implementar porque no había servidor.
-
-⏱️ **3 a 5 semanas** · 💰 **$0/mes** al principio; unos **$25/mes** cuando el
-uso crezca.
+⏱️ **20 minutos de configuración** · 💰 **$0/mes**; unos **$25/mes** recién
+cuando el uso crezca.
 
 ---
 
@@ -113,7 +110,7 @@ programarla de nuevo.
 | Etapa | Qué desbloquea | Tiempo | Costo |
 |---|---|---|---|
 | ✅ 0 — Base técnica | App instalable con datos reales | hecho | $0 |
-| 🔨 1 — Servidor | Chat, "voy" y afluencia compartidos de verdad | 3–5 sem | $0 → $25/mes |
+| ✅ 1 — Servidor | Chat, "voy" y afluencia compartidos de verdad | hecho | $0 → $25/mes |
 | 💳 2 — Pagos | Ingresos por suscripción | 2–3 sem | ~6% + honorarios |
 | 📱 3 — Tiendas | Visibilidad en App Store y Play | 1–2 sem | USD 99/año + 25 |
 
@@ -121,18 +118,23 @@ programarla de nuevo.
 
 ## Tres cosas que conviene decidir pronto
 
-**1. El verano de Mar del Plata es la oportunidad, pero solo con la Etapa 1
-lista.** Sin servidor la app se ve bien pero no genera lo que la hace valiosa:
-gente hablando entre sí y afluencia real. Si la temporada es el objetivo, hay
-que contar para atrás desde diciembre.
+**1. El verano de Mar del Plata ya es alcanzable.** Con la Etapa 1 lista, lo
+que falta para la temporada no es técnico: es cargar bien los lugares y
+conseguir los primeros usuarios. Conviene empezar a probar la app con gente
+real cuanto antes, aunque sean veinte personas.
 
 **2. Cargar los lugares es trabajo manual y lleva más de lo que parece.** Los 30
 de Mar del Plata están, pero cada ciudad nueva son horas de buscar direcciones,
 coordenadas, horarios y precios. Antes de prometer una ciudad, conviene medir
 cuánto cuesta cargarla.
 
-**3. La afluencia no se mide sola.** Hoy la carga el admin a mano. Que sea real
-necesita o bien que los locales la reporten (hay que convencerlos), o bien
-deducirla de cuánta gente marcó que va (más fácil, menos preciso, pero se puede
-empezar por ahí). Es una decisión de producto, no técnica, y conviene tomarla
-antes de la Etapa 1 porque cambia el diseño de la base de datos.
+**3. La afluencia ya se mide sola, pero depende de dos cosas.** Se calcula
+dividiendo la gente que marcó que va por la capacidad del lugar. Entonces:
+
+- **La capacidad de cada lugar tiene que estar bien cargada.** Hoy son
+  estimaciones por tipo de local. Con el dato real de cada boliche el número
+  mejora mucho.
+- **Con pocos usuarios el porcentaje va a ser bajo.** Es esperable y no es un
+  error: mientras tanto, el admin o el encargado del local pueden pisarlo a
+  mano desde el panel. Esa carga manual dura 6 horas y después vuelve el
+  automático.

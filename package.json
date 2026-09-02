@@ -1,0 +1,15 @@
+{
+  "name": "salgo",
+  "version": "1.0.0",
+  "description": "SALGO — dónde salir esta noche, cerca tuyo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "test": "./tests/run.sh",
+    "test:db": "./supabase/test.sh"
+  },
+  "devDependencies": {
+    "playwright": "^1.56.0"
+  }
+}

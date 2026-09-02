@@ -1,3 +1,12 @@
 .DS_Store
 node_modules/
 *.log
+
+# Capturas que generan los tests al correr
+tests/screenshots/
+
+# Herramientas locales de cada desarrollador (skills de agentes).
+# Si el equipo las quiere compartir, sacá estas tres líneas y commitealas.
+.agents/
+.claude/
+skills-lock.json
