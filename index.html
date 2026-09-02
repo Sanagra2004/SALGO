@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#080810">
+<meta name="description" content="SALGO — dónde salir esta noche, cerca tuyo. Boliches, bares y ofertas en tiempo real.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SALGO">
+<title>SALGO — Dónde salir esta noche</title>
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="public/icon-192.png">
+<link rel="icon" type="image/png" href="public/icon-192.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/base.css">
+<link rel="stylesheet" href="src/styles/components.css">
+<link rel="stylesheet" href="src/styles/screens.css">
+</head>
+<body>
+
+<div class="app">
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SCREEN: INICIO (MAPA + LUGARES) -->
+<div class="screen" id="screen-home">
+  <div class="status">
+    <span class="status-time" id="clock">23:18</span>
+    <div class="status-icons">📶 🔋</div>
+  </div>
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-ico">
+        <span class="logo-ico-s">S</span>
+      </div>
+      <span class="logo-txt">SAL<span>GO</span></span>
+    </div>
+    <div class="loc-pill" onclick="openCityModal()"><div class="loc-dot"></div><span class="city-display">Mar del Plata</span> ▾</div>
+  </div>
+  <div class="content">
+    <div class="search-bar">
+      <svg class="search-ico" width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="rgba(10,10,20,0.4)" stroke-width="1.3"/><path d="M11 11l3 3" stroke="rgba(10,10,20,0.4)" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input id="search-input" placeholder="Buscar boliche, bar, evento..." oninput="filterPlaces(this.value)">
+    </div>
+    <div class="chips" id="chips-home">
+      <div class="chip on" data-chip="Todo">Todo</div>
+      <div class="chip off" data-chip="Cerca">📍 Cerca mío</div>
+      <div class="chip off" data-chip="Boliche">Boliche</div>
+      <div class="chip off" data-chip="Bar">Bar</div>
+      <div class="chip off" data-chip="Techno">Techno</div>
+      <div class="chip off" data-chip="Cumbia">Cumbia</div>
+      <div class="chip off" data-chip="Rock">Rock</div>
+    </div>
+
+    <div class="story-ring-wrap-outer" id="story-ring"></div>
+    <div class="sec-lbl">Mapa en vivo</div>
+    <div class="map-wrap">
+      <div class="map-box" id="main-map-box"></div>
+      <div class="map-legend">
+        <span class="map-legend-dot" style="background:var(--accent);"></span><span>Abierto</span>
+        <span class="map-legend-dot" style="background:var(--amber);margin-left:8px;"></span><span>Hoy abre</span>
+        <button class="map-open-btn" id="main-map-open">Ver mapa completo →</button>
+      </div>
+      <div class="map-hint" id="map-hint"></div>
+    </div>
+
+    <div class="sec-lbl">Cerca tuyo esta noche</div>
+    <div class="places" id="places-list"></div>
+  </div>
+  <nav class="navbar">
+    <div class="ni active" data-nav="home">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 11L11 3l8 8" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round"/><path d="M5 9v9h4v-5h4v5h4V9" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="ni-lbl">Inicio</span>
+      <div class="ni-dot"></div>
+    </div>
+    <div class="ni" data-nav="offers">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="7.5" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M8 11h6M11 8v6" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl">Ofertas</span>
+    </div>
+    <div class="ni" data-nav="ai">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4" y="4" width="14" height="14" rx="4" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M8 11h6M11 8v6" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl">SALGO IA</span>
+    </div>
+    <div class="ni" data-nav="wallet">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="6" width="16" height="12" rx="3" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M3 10h16" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><circle cx="16" cy="14" r="1.5" fill="rgba(10,10,20,0.3)"/></svg>
+      <span class="ni-lbl">Billetera</span>
+    </div>
+
+    <div class="ni" data-nav="profile">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="3.5" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M4 19c0-3.87 3.13-7 7-7s7 3.13 7 7" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl">Perfil</span>
+    </div>
+  </nav>
+</div>
+
+<!-- SCREEN: EXPLORAR -->
+<div class="screen hidden" id="screen-explore">
+  <div class="status">
+    <span class="status-time" id="clock2">23:18</span>
+    <div class="status-icons">📶 🔋</div>
+  </div>
+  <div class="hdr">
+    <div style="font-size:18px;font-weight:700;letter-spacing:-0.5px;">Ofertas <span style="color:var(--txt3);font-weight:400;font-size:14px;">· Descuentos de hoy</span></div>
+    <div class="loc-pill" onclick="openCityModal()"><div class="loc-dot"></div><span class="city-display">Mar del Plata</span> ▾</div>
+  </div>
+  <div class="content">
+    <div class="exp-featured" onclick="openDetail(4)">
+      <svg class="exp-pat" viewBox="0 0 340 140" fill="none"><circle cx="260" cy="40" r="100" fill="#b44dff"/><circle cx="60" cy="130" r="80" fill="#ff2d78"/></svg>
+      <div class="exp-feat-price">Desde $3.500</div>
+      <div>
+        <div class="exp-feat-tag">DESTACADO ESTA NOCHE</div>
+        <div class="exp-feat-name">Warehouse Night</div>
+        <div class="exp-feat-sub">La Fábrica · 01:00–07:00 · 340m</div>
+      </div>
+    </div>
+    <div class="chips">
+      <div class="chip on">Todo</div>
+      <div class="chip off">Electrónica</div>
+      <div class="chip off">Cumbia</div>
+      <div class="chip off">Rock</div>
+      <div class="chip off">Bares</div>
+    </div>
+    <div class="sec">Todos los lugares</div>
+    <div class="exp-list" id="exp-list"></div>
+  </div>
+  <nav class="navbar">
+    <div class="ni" data-nav="home">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 11L11 3l8 8" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/><path d="M5 9v9h4v-5h4v5h4V9" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="ni-lbl">Inicio</span>
+    </div>
+    <div class="ni active" data-nav="offers">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="7.5" stroke="#A78BFA" stroke-width="1.5"/><path d="M8 11h6M11 8v6" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl">Ofertas</span>
+      <div class="ni-dot"></div>
+    </div>
+    <div class="ni" data-nav="ai">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4" y="4" width="14" height="14" rx="4" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M8 11h6M11 8v6" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl">SALGO IA</span>
+    </div>
+    <div class="ni" data-nav="profile">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="3.5" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M4 19c0-3.87 3.13-7 7-7s7 3.13 7 7" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl">Perfil</span>
+    </div>
+  </nav>
+</div>
+
+<!-- SCREEN: PERFIL -->
+<div class="screen hidden" id="screen-profile">
+  <div class="status">
+    <span class="status-time">23:18</span>
+    <div class="status-icons">📶 🔋</div>
+  </div>
+  <div class="content">
+    <div class="pf-hero">
+      <div class="pf-av" id="pf-av">JL</div>
+      <div class="pf-name" id="pf-name">Juli Lopez</div>
+      <div class="pf-handle" id="pf-handle">@julilopez · Mar del Plata</div>
+      <div class="pf-stats">
+        <div class="pf-stat"><div class="pf-sv">47</div><div class="pf-sl">Salidas</div></div>
+        <div class="pf-stat"><div class="pf-sv">128</div><div class="pf-sl">Amigos</div></div>
+        <div class="pf-stat"><div class="pf-sv">23</div><div class="pf-sl">Reseñas</div></div>
+      </div>
+    </div>
+    <div class="pf-divider"></div>
+    <div class="pf-pro">
+      <div style="position:absolute;top:-40px;right:-40px;width:150px;height:150px;border-radius:50%;background:rgba(255,45,120,0.25);filter:blur(40px);pointer-events:none;"></div>
+      <div style="position:absolute;bottom:-30px;left:-20px;width:120px;height:120px;border-radius:50%;background:rgba(0,229,255,0.15);filter:blur(40px);pointer-events:none;"></div>
+      <div style="position:relative;z-index:1;">
+        <div style="font-size:11px;font-weight:700;color:rgba(255,204,0,0.8);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;">⭐ Membresía exclusiva</div>
+        <div class="pf-pro-name">SALGO Pro</div>
+        <div class="pf-pro-desc">Prioridad de ingreso · 15% off consumiciones<br>Puntos canjeables · Sin publicidad</div>
+      </div>
+      <button class="pf-pro-btn" onclick="openPro()">Ver →</button>
+    </div>
+    <div class="pf-section">Últimas salidas</div>
+    <div class="pf-list">
+      <div class="pf-item">
+        <div class="pf-item-l"><div class="pf-item-dot" style="background:#7C3AED;"></div><div><div class="pf-item-name">Kü Club</div><div class="pf-item-date">Viernes 2 mayo</div></div></div>
+        <div class="pf-stars">★★★★★</div>
+      </div>
+      <div class="pf-item">
+        <div class="pf-item-l"><div class="pf-item-dot" style="background:#f59e0b;"></div><div><div class="pf-item-name">Sona Bar</div><div class="pf-item-date">Sábado 26 abril</div></div></div>
+        <div class="pf-stars">★★★★☆</div>
+      </div>
+      <div class="pf-item">
+        <div class="pf-item-l"><div class="pf-item-dot" style="background:#22c55e;"></div><div><div class="pf-item-name">La Barra</div><div class="pf-item-date">Viernes 18 abril</div></div></div>
+        <div class="pf-stars">★★★★★</div>
+      </div>
+      <div class="pf-section" style="padding-left:0;">Preferencias</div>
+      <div class="pf-toggle-row"><span class="pf-toggle-name">Alertas de afluencia</span><div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div></div>
+      <div class="pf-toggle-row"><span class="pf-toggle-name">Eventos cercanos</span><div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div></div>
+      <div class="pf-toggle-row"><span class="pf-toggle-name">Mostrarme en el chat</span><div class="toggle off" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div></div>
+    </div>
+  </div>
+  <nav class="navbar">
+    <div class="ni" data-nav="home">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 11L11 3l8 8" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/><path d="M5 9v9h4v-5h4v5h4V9" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="ni-lbl">Inicio</span>
+    </div>
+    <div class="ni" data-nav="offers">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="7.5" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M8 11h6M11 8v6" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl">Ofertas</span>
+    </div>
+    <div class="ni active" data-nav="profile">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="3.5" stroke="#A78BFA" stroke-width="1.5"/><path d="M4 19c0-3.87 3.13-7 7-7s7 3.13 7 7" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl">Perfil</span>
+      <div class="ni-dot"></div>
+    </div>
+  </nav>
+</div>
+
+
+<!-- SCREEN: SALGO PRO -->
+<div class="screen hidden pro-screen" id="screen-pro">
+  <div class="demo-badge">DEMO · la suscripción todavía no se puede contratar</div>
+  <div class="status" style="position:absolute;top:0;left:0;right:0;z-index:2;">
+    <span class="status-time" style="color:#fff;">23:18</span>
+    <div class="status-icons" style="color:#fff;">📶 🔋</div>
+  </div>
+
+  <div class="content">
+    <!-- HERO -->
+    <div class="pro-hero">
+      <div class="pro-hero-glow1"></div>
+      <div class="pro-hero-glow2"></div>
+      <div class="pro-back" onclick="showScreen('profile')">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="pro-crown">⭐</span>
+      <div class="pro-hero-title">SALGO <span>PRO</span></div>
+      <div class="pro-hero-sub">La noche sin límites.<br>Beneficios exclusivos para salir mejor.</div>
+      <div class="pro-price-row">
+        <span class="pro-price-val" id="pro-price-display">AR$ 2.000</span>
+        <span class="pro-price-period" id="pro-period-display">/mes</span>
+      </div>
+      <div class="pro-price-note" id="pro-saving-note">⚡ 1 semana gratis para nuevos usuarios</div>
+    </div>
+
+    <!-- PLANES -->
+    <div class="pro-plans">
+      <div class="pro-plan selected" id="plan-1mes" onclick="selectPlan(1)">
+        <div class="pro-plan-badge plan-badge-flex">Mensual</div>
+        <div class="pro-plan-price">AR$ 2.000</div>
+        <div class="pro-plan-period">/mes</div>
+      </div>
+      <div class="pro-plan unselected" id="plan-3mes" onclick="selectPlan(3)">
+        <div class="pro-plan-badge plan-badge-popular">⭐ Popular</div>
+        <div class="pro-plan-price">AR$ 1.800</div>
+        <div class="pro-plan-period">/mes</div>
+        <div class="pro-plan-total">Total AR$ 5.400 × 3</div>
+      </div>
+      <div class="pro-plan unselected" id="plan-12mes" onclick="selectPlan(12)">
+        <div class="pro-plan-badge plan-badge-save">Ahorrás 25%</div>
+        <div class="pro-plan-price">AR$ 1.500</div>
+        <div class="pro-plan-period">/mes</div>
+        <div class="pro-plan-total">Total AR$ 18.000 × 12</div>
+      </div>
+    </div>
+
+    <!-- TARJETA PUNTOS -->
+    <div class="pro-benefits-title">🏆 Tu comunidad de puntos</div>
+    <div class="pro-points-card">
+      <div class="pro-points-glow"></div>
+      <div class="pro-points-title">SALGO Points</div>
+      <div class="pro-points-sub">Acumulás puntos en cada salida y los canjeás por beneficios</div>
+      <div class="pro-points-bal">
+        <span class="pro-points-num" id="user-points">1,240</span>
+        <span class="pro-points-lbl">pts disponibles</span>
+      </div>
+      <div class="pro-points-bar-wrap">
+        <div class="pro-points-bar-lbl"><span>Nivel Plata</span><span>Oro: 2.000 pts</span></div>
+        <div class="pro-points-bar"><div class="pro-points-bar-fill" style="width:62%;"></div></div>
+      </div>
+      <div class="pro-points-next">760 puntos más para subir a ORO 🥇</div>
+      <div class="pro-canje-row">
+        <div class="pro-canje-item" onclick="canjear('Trago gratis',300)">
+          <div class="pro-canje-ico">🍹</div>
+          <div class="pro-canje-name">Trago gratis</div>
+          <div class="pro-canje-pts">300 pts</div>
+        </div>
+        <div class="pro-canje-item" onclick="canjear('Entrada gratis',800)">
+          <div class="pro-canje-ico">🎟️</div>
+          <div class="pro-canje-name">Entrada gratis</div>
+          <div class="pro-canje-pts">800 pts</div>
+        </div>
+        <div class="pro-canje-item" onclick="canjear('20% descuento',500)">
+          <div class="pro-canje-ico">💸</div>
+          <div class="pro-canje-name">20% descuento</div>
+          <div class="pro-canje-pts">500 pts</div>
+        </div>
+        <div class="pro-canje-item" onclick="canjear('Meet & Greet DJ',1500)">
+          <div class="pro-canje-ico">🎧</div>
+          <div class="pro-canje-name">Meet & Greet</div>
+          <div class="pro-canje-pts">1.500 pts</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BENEFICIOS -->
+    <div class="pro-benefits-title">✦ Todos los beneficios Pro</div>
+    <div class="pro-benefits">
+
+      <div class="pro-benefit">
+        <div class="pro-benefit-ico" style="background:rgba(255,45,120,0.1);">🚀</div>
+        <div class="pro-benefit-info">
+          <div class="pro-benefit-name">Prioridad de ingreso</div>
+          <div class="pro-benefit-desc">Tu QR Pro te permite entrar antes que la fila normal. Sin esperar en la puerta.</div>
+        </div>
+        <div class="pro-benefit-tag" style="background:rgba(255,45,120,0.1);color:#ff2d78;">VIP</div>
+      </div>
+
+      <div class="pro-benefit">
+        <div class="pro-benefit-ico" style="background:rgba(0,184,118,0.1);">🍻</div>
+        <div class="pro-benefit-info">
+          <div class="pro-benefit-name">15% off en consumiciones</div>
+          <div class="pro-benefit-desc">Descuento automático en bares y boliches adheridos. Mostrás el QR al mozo.</div>
+        </div>
+        <div class="pro-benefit-tag" style="background:rgba(0,184,118,0.1);color:#00b876;">-15%</div>
+      </div>
+
+      <div class="pro-benefit">
+        <div class="pro-benefit-ico" style="background:rgba(180,77,255,0.1);">💳</div>
+        <div class="pro-benefit-info">
+          <div class="pro-benefit-name">Cuotas sin interés</div>
+          <div class="pro-benefit-desc">Pagá en hasta 6 cuotas sin interés con Visa, Mastercard o American Express.</div>
+        </div>
+        <div class="pro-benefit-tag" style="background:rgba(180,77,255,0.1);color:#b44dff;">6 cuotas</div>
+      </div>
+
+      <div class="pro-benefit">
+        <div class="pro-benefit-ico" style="background:rgba(255,204,0,0.12);">⭐</div>
+        <div class="pro-benefit-info">
+          <div class="pro-benefit-name">Comunidad de puntos</div>
+          <div class="pro-benefit-desc">Ganás 10 pts por cada salida, 5 por reseña y 20 por invitar amigos. Canjealos por entradas, tragos y más.</div>
+        </div>
+        <div class="pro-benefit-tag" style="background:rgba(255,204,0,0.12);color:#cc9900;">Points</div>
+      </div>
+
+      <div class="pro-benefit">
+        <div class="pro-benefit-ico" style="background:rgba(0,229,255,0.1);">🔔</div>
+        <div class="pro-benefit-info">
+          <div class="pro-benefit-name">Alertas VIP anticipadas</div>
+          <div class="pro-benefit-desc">Te avisamos 30 min antes que un lugar se llene. Solo los Pro lo saben primero.</div>
+        </div>
+        <div class="pro-benefit-tag" style="background:rgba(0,229,255,0.1);color:#00aacc;">Early</div>
+      </div>
+
+      <div class="pro-benefit">
+        <div class="pro-benefit-ico" style="background:rgba(10,10,20,0.06);">💬</div>
+        <div class="pro-benefit-info">
+          <div class="pro-benefit-name">Chat ilimitado + sin ads</div>
+          <div class="pro-benefit-desc">Mandá todos los mensajes que quieras. Experiencia sin publicidad en toda la app.</div>
+        </div>
+        <div class="pro-benefit-tag" style="background:rgba(10,10,20,0.06);color:rgba(10,10,20,0.5);">Libre</div>
+      </div>
+
+      <div class="pro-benefit">
+        <div class="pro-benefit-ico" style="background:rgba(255,107,0,0.1);">🎟️</div>
+        <div class="pro-benefit-info">
+          <div class="pro-benefit-name">Acceso a preventas exclusivas</div>
+          <div class="pro-benefit-desc">Entradas a precio de preventa solo disponibles para miembros Pro, 48hs antes.</div>
+        </div>
+        <div class="pro-benefit-tag" style="background:rgba(255,107,0,0.1);color:#ff6b00;">Preventa</div>
+      </div>
+
+
+      <!-- WALLET BENEFIT -->
+      <div class="wh-benefit-card" onclick="openWallet()">
+        <div class="wh-benefit-top">
+          <div class="wh-benefit-top-g"></div>
+          <div style="font-size:11px;font-weight:700;color:rgba(0,230,120,0.7);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;">💚 Billetera virtual</div>
+          <div class="wh-benefit-balance" id="wh-benefit-bal">AR$ 12.450</div>
+          <div class="wh-benefit-lbl">Saldo disponible</div>
+          <div class="wh-benefit-actions-row">
+            <div class="wh-benefit-action"><div class="wh-benefit-action-ico">⬇️</div><div class="wh-benefit-action-lbl">Depositar</div></div>
+            <div class="wh-benefit-action"><div class="wh-benefit-action-ico">↗️</div><div class="wh-benefit-action-lbl">Transferir</div></div>
+            <div class="wh-benefit-action"><div class="wh-benefit-action-ico">🎟️</div><div class="wh-benefit-action-lbl">Pagar</div></div>
+            <div class="wh-benefit-action"><div class="wh-benefit-action-ico">💳</div><div class="wh-benefit-action-lbl">Retirar</div></div>
+          </div>
+        </div>
+        <div class="wh-benefit-footer">
+          <div>
+            <div class="wh-benefit-footer-txt">Billetera SALGO</div>
+            <div class="wh-benefit-footer-sub">Depósito, transferencia y pagos en locales</div>
+          </div>
+          <div class="wh-benefit-footer-btn">Abrir →</div>
+        </div>
+      </div>
+      <!-- VISA CARD BENEFIT -->
+      <div class="pro-benefit" onclick="openCard()" style="cursor:pointer;padding:0;overflow:hidden;border:none;box-shadow:0 8px 32px rgba(26,31,113,0.35);">
+        <div style="width:100%;height:130px;background:linear-gradient(135deg,#1a1f71,#2b3ab8,#1a6cbf);position:relative;overflow:hidden;border-radius:16px 16px 0 0;">
+          <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.08);pointer-events:none;"></div>
+          <div style="position:absolute;bottom:-30px;left:-20px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
+          <div style="position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,0.07) 50%,transparent 60%);pointer-events:none;"></div>
+          <div style="position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff;letter-spacing:-0.3px;opacity:0.95;">SALGO</span>
+            <span style="font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;letter-spacing:3px;font-style:italic;opacity:0.95;">VISA</span>
+          </div>
+          <div style="position:absolute;top:46px;left:16px;width:30px;height:22px;border-radius:5px;background:linear-gradient(135deg,#c8973a,#f5d060,#c8973a);box-shadow:0 1px 6px rgba(0,0,0,0.3);">
+            <div style="position:absolute;inset:3px;border-radius:3px;background:linear-gradient(135deg,#d4a843,#f0d060);border:0.5px solid rgba(255,255,255,0.3);"></div>
+          </div>
+          <div style="position:absolute;top:44px;right:16px;opacity:0.5;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="rgba(255,255,255,0.7)" stroke-width="1.2"/><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z" stroke="rgba(255,255,255,0.7)" stroke-width="1.2"/><circle cx="12" cy="12" r="2" fill="rgba(255,255,255,0.7)"/></svg>
+          </div>
+          <div style="position:absolute;bottom:38px;left:16px;font-family:'DM Sans',monospace;font-size:13px;font-weight:600;color:rgba(255,255,255,0.9);letter-spacing:3px;">•••• •••• •••• ••••</div>
+          <div style="position:absolute;bottom:14px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:flex-end;">
+            <div>
+              <div style="font-size:7px;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Titular</div>
+              <div style="font-size:11px;font-weight:700;color:#fff;letter-spacing:1px;text-transform:uppercase;">TU NOMBRE</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:7px;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px;">Vence</div>
+              <div style="font-size:11px;font-weight:700;color:#fff;">MM/AA</div>
+            </div>
+          </div>
+        </div>
+        <div style="padding:12px 14px 13px;background:#fff;width:100%;border-radius:0 0 16px 16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#0a0a14;margin-bottom:2px;">Tarjeta VISA SALGO</div>
+              <div style="font-size:11px;color:rgba(10,10,20,0.5);">Registrate para ser el primero cuando salga</div>
+            </div>
+            <div style="font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;background:linear-gradient(135deg,#1a1f71,#2b3ab8);color:#fff;white-space:nowrap;">Ver →</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CTA -->
+    <div class="pro-cta-wrap">
+      <button class="pro-cta-btn" onclick="activatePro()">⭐ Activar SALGO Pro</button>
+      <div class="pro-cta-note">Cancelás cuando quieras · Sin permanencia</div>
+      <div class="pro-cc-row" onclick="openCard()" style="cursor:pointer;" title="Ver tarjeta">
+        <div class="pro-cc-badge" style="background:linear-gradient(135deg,#1a1f71,#2b3ab8);color:#fff;border:none;">VISA</div>
+      </div>
+      <div style="text-align:center;margin-top:6px;font-size:11px;color:rgba(10,10,20,0.35);cursor:pointer;" onclick="openCard()">💳 Ver tarjeta SALGO →</div>
+    </div>
+
+  </div>
+</div>
+<!-- SCREEN: DETALLE -->
+<div class="screen hidden" id="screen-detail">
+  <div class="detail-hero" id="detail-hero">
+    <svg class="detail-pattern" viewBox="0 0 380 170" fill="none"><circle cx="280" cy="50" r="110" fill="#7C3AED"/><circle cx="70" cy="150" r="90" fill="#A78BFA"/></svg>
+    <div class="detail-back" onclick="closeDetail()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div>
+      <div class="detail-badge" id="detail-badge">TECHNO · HOUSE</div>
+      <div class="detail-name" id="detail-name">Warehouse Night</div>
+      <div class="detail-addr" id="detail-addr">La Fábrica · Av. Constitución 2140</div>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;" id="detail-scroll">
+    <div class="detail-body">
+      <div class="place-gallery" id="place-gallery-wrap" style="padding:0 0 14px;"></div>
+      <div id="place-ig-wrap"></div>
+      <div class="detail-grid3" id="detail-stats"></div>
+      <div class="crowd-section">
+        <div class="crowd-lbl">
+          <span class="crowd-t">Afluencia ahora</span>
+          <span id="crowd-pct" style="font-size:11px;font-weight:600;"></span>
+        </div>
+        <div class="crowd-trk"><div class="crowd-fill" id="crowd-bar"></div></div>
+      </div>
+      <div class="going-row">
+        <div class="going-avs" id="going-avs"></div>
+        <span class="going-txt" id="going-txt"></span>
+      </div>
+      <div class="detail-cta">
+        <button class="btn-main" id="going-btn" onclick="markGoing()">¡Voy esta noche!</button>
+        <div class="btn-sec" onclick="openReserva(currentDetail)">🎟️</div><div class="btn-sec" onclick="sharePlace()">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="15" cy="4" r="2" stroke="#A78BFA" stroke-width="1.3"/><circle cx="15" cy="16" r="2" stroke="#A78BFA" stroke-width="1.3"/><circle cx="5" cy="10" r="2" stroke="#A78BFA" stroke-width="1.3"/><path d="M7 9l6-3.5M7 11l6 3.5" stroke="#A78BFA" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT MEJORADO -->
+    <div class="chat-wrap-new">
+      <div class="chat-hdr-new">
+        <span class="chat-title-new">💬 Chat del lugar</span>
+        <div class="chat-online-row">
+          <div class="chat-online-avs" id="chat-online-avs"></div>
+          <span class="chat-online-lbl" id="chat-online-count">Van esta noche</span>
+        </div>
+      </div>
+      <div class="chat-tabs">
+        <div class="chat-tab-btn active" id="chat-tab-msgs" onclick="switchChatTab('msgs')">💬 Chat</div>
+        <div class="chat-tab-btn" id="chat-tab-going" onclick="switchChatTab('going')">🎉 ¿Quién va?</div>
+      </div>
+      <div class="msgs-new" id="detail-msgs"></div>
+      <div class="going-chat-list" id="going-people-list" style="display:none;"></div>
+      <div class="chat-input-new-row" id="chat-input-row">
+        <textarea class="chat-inp-new" id="chat-input" placeholder="Escribí algo para el grupo..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,80)+'px'"></textarea>
+        <button class="chat-send-new" onclick="sendMsg()">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8h12M10 4l4 4-4 4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- SCREEN: SALGO IA -->
+<div class="screen hidden" id="screen-ai">
+  <div class="status">
+    <span class="status-time" id="clock-ai">23:18</span>
+    <div class="status-icons">📶 🔋</div>
+  </div>
+  <div class="ai-header">
+    <div class="ai-title-row">
+      <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,#ff2d78,#b44dff,#00e5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">SALGO IA</div>
+      <div class="ai-badge"><div class="ai-badge-dot"></div>En línea</div>
+    </div>
+  </div>
+  <div class="ai-subtitle">Preguntame sobre lugares, qué está abierto, afluencia, precios o pedime recomendaciones para esta noche.</div>
+  <div class="ai-suggestions">
+    <div class="ai-sug" onclick="aiSuggest(this.textContent)">¿Qué está más lleno ahora?</div>
+    <div class="ai-sug" onclick="aiSuggest(this.textContent)">Recomendame un bar tranquilo</div>
+    <div class="ai-sug" onclick="aiSuggest(this.textContent)">¿Hay techno esta noche?</div>
+    <div class="ai-sug" onclick="aiSuggest(this.textContent)">Lugares con entrada gratis</div>
+    <div class="ai-sug" onclick="aiSuggest(this.textContent)">¿Qué hay de nuevo en MdP?</div>
+    <div class="ai-sug" onclick="aiSuggest(this.textContent)">El mejor lugar para ir en grupo</div>
+  </div>
+  <div class="ai-msgs" id="ai-msgs">
+    <div class="ai-msg">
+      <div class="ai-av bot">✦</div>
+      <div class="ai-bubble bot">¡Hola! Soy la IA de SALGO 🎉 Puedo ayudarte a encontrar el lugar perfecto para esta noche, contarte qué está abierto, cuánta gente hay, los precios y mucho más.<br><br>¿Qué estás buscando?</div>
+    </div>
+  </div>
+  <div class="ai-input-wrap">
+    <textarea class="ai-input" id="ai-input" placeholder="Preguntame sobre la noche..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend()}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+    <button class="ai-send" onclick="aiSend()">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 9h14M11 4l5 5-5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <nav class="navbar">
+    <div class="ni" data-nav="home">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 11L11 3l8 8" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/><path d="M5 9v9h4v-5h4v5h4V9" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="ni-lbl">Inicio</span>
+    </div>
+    <div class="ni" data-nav="offers">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="7.5" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M8 11h6M11 8v6" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl">Ofertas</span>
+    </div>
+    <div class="ni active" data-nav="ai">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4" y="4" width="14" height="14" rx="4" stroke="#ff2d78" stroke-width="1.5"/><path d="M8 11h6M11 8v6" stroke="#ff2d78" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl" style="background:linear-gradient(135deg,#ff2d78,#b44dff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">SALGO IA</span>
+      <div class="ni-dot"></div>
+    </div>
+    <div class="ni" data-nav="profile">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="3.5" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M4 19c0-3.87 3.13-7 7-7s7 3.13 7 7" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="ni-lbl">Perfil</span>
+    </div>
+  </nav>
+</div>
+
+<!-- SCREEN: TARJETA -->
+<div class="screen hidden card-screen" id="screen-card">
+  <div class="demo-badge">DEMO · la tarjeta SALGO todavía no existe</div>
+  <div class="status" style="position:absolute;top:0;left:0;right:0;z-index:2;">
+    <span class="status-time" style="color:#fff;">23:18</span>
+    <div class="status-icons" style="color:#fff;">📶 🔋</div>
+  </div>
+
+  <div class="content">
+
+    <!-- HERO + VISUAL CARD -->
+    <div class="card-hero">
+      <div class="card-hero-g1"></div>
+      <div class="card-hero-g2"></div>
+      <div class="card-hero-back" onclick="showScreen('pro')">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="card-hero-title">Tarjeta VISA SALGO</div>
+      <div class="card-hero-sub">Tarjeta VISA SALGO · Próximamente 🚀</div>
+
+      <div class="card-visual" id="card-visual">
+        <div class="card-visual-bg" id="card-bg" style="background:linear-gradient(135deg,#1a1f71,#2b3ab8,#1a6cbf);"></div>
+        <div class="card-visual-shine"></div>
+        <div class="card-visual-shine2"></div>
+        <div class="card-visual-stripe"></div>
+        <div class="card-visual-glare"></div>
+        <div class="card-logo-row">
+          <span class="card-salgo-mark">SALGO</span>
+          <span style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:3px;font-style:italic;opacity:0.95;text-shadow:0 2px 10px rgba(0,0,0,0.3);">VISA</span>
+        </div>
+        <div class="card-chip"><div class="card-chip-inner"></div></div>
+        <div class="card-nfc">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke="rgba(255,255,255,0.5)" stroke-width="1"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" stroke="rgba(255,255,255,0.5)" stroke-width="1"/><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" fill="rgba(255,255,255,0.5)"/></svg>
+        </div>
+        <div class="card-number" id="card-number-display">•••• •••• •••• ••••</div>
+        <div class="card-bottom">
+          <div>
+            <div class="card-holder-lbl">Titular</div>
+            <div class="card-holder-name" id="card-name-display">TU NOMBRE</div>
+          </div>
+          <div>
+            <div class="card-exp-lbl">Vence</div>
+            <div class="card-exp-val" id="card-exp-display">MM/AA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+    <div class="card-form">
+      <div>
+        <div class="card-form-title">Registrá tu interés</div>
+        <div class="card-form-sub">Sé el primero en tener la tarjeta SALGO cuando salga 🚀</div>
+      </div>
+
+
+
+      <!-- Nombre -->
+      <div class="card-field-group">
+        <span class="card-label">Nombre en la tarjeta</span>
+        <input class="card-input" id="card-name-inp" placeholder="Como figura en tu tarjeta" maxlength="22"
+          oninput="updateCardPreview()">
+      </div>
+
+      <!-- Número -->
+      <div class="card-field-group">
+        <span class="card-label">Número de tarjeta</span>
+        <input class="card-input" id="card-num-inp" placeholder="1234 5678 9012 3456" maxlength="19"
+          oninput="formatCardNum(this);updateCardPreview()">
+      </div>
+
+      <!-- Vencimiento + CVV -->
+      <div class="card-field-group">
+        <span class="card-label">Vencimiento y CVV</span>
+        <div class="card-field-row">
+          <input class="card-input half" id="card-exp-inp" placeholder="MM/AA" maxlength="5"
+            oninput="formatExp(this);updateCardPreview()">
+          <input class="card-input half" id="card-cvv-inp" placeholder="CVV" maxlength="4" type="password">
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="card-field-group">
+        <span class="card-label">Email para notificarte</span>
+        <input class="card-input" id="card-email-inp" placeholder="tu@email.com" type="email">
+      </div>
+
+      <!-- Security -->
+      <div class="card-security">
+        <span class="card-sec-ico">🔒</span>
+        <div class="card-sec-txt"><strong>Datos seguros y encriptados</strong><br>Esta pantalla es un preview. Cuando la tarjeta esté disponible, el procesamiento será vía Stripe con certificación PCI DSS.</div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="card-cta-wrap">
+      <button class="card-cta-btn" onclick="submitCard()">🚀 Quiero mi tarjeta SALGO</button>
+      <div class="card-cta-note">Te avisamos por email cuando esté disponible · Sin compromiso</div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- SCREEN: BILLETERA -->
+<div class="screen hidden wallet-screen" id="screen-wallet">
+  <div class="demo-badge">DEMO · no se mueve dinero real</div>
+  <div class="status" style="position:absolute;top:0;left:0;right:0;z-index:2;">
+    <span class="status-time" style="color:#fff;">23:18</span>
+    <div class="status-icons" style="color:#fff;">📶 🔋</div>
+  </div>
+
+  <!-- HERO BALANCE -->
+  <div class="wallet-hero">
+    <div class="wh-g1"></div>
+    <div class="wh-g2"></div>
+    <div class="wh-back" onclick="showScreen('profile')">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7l5 5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="wh-title">Mi billetera SALGO</div>
+    <div class="wh-balance" id="wh-balance">AR$ 12.450</div>
+    <div class="wh-balance-label">Saldo disponible · Actualizado ahora</div>
+    <div class="wh-quick-actions">
+      <div class="wh-action" onclick="openWalletModal('depositar')">
+        <div class="wh-action-ico">⬇️</div>
+        <div class="wh-action-lbl">Depositar</div>
+      </div>
+      <div class="wh-action" onclick="openWalletModal('transferir')">
+        <div class="wh-action-ico">↗️</div>
+        <div class="wh-action-lbl">Transferir</div>
+      </div>
+      <div class="wh-action" onclick="openWalletModal('pagar')">
+        <div class="wh-action-ico">🎟️</div>
+        <div class="wh-action-lbl">Pagar</div>
+      </div>
+      <div class="wh-action" onclick="openWalletModal('retirar')">
+        <div class="wh-action-ico">💳</div>
+        <div class="wh-action-lbl">Retirar</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- TARJETAS VINCULADAS -->
+    <div class="wh-sec">Tarjetas vinculadas</div>
+    <div class="wh-cards">
+      <div class="wh-card-chip">
+        <div style="position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,0.07) 50%,transparent 60%);"></div>
+        <div class="cchip"></div>
+        <div class="cnet">VISA</div>
+        <div class="cnum">•••• •••• •••• 4521</div>
+        <div class="cname">Juli Lopez</div>
+      </div>
+      <div class="wh-add-card" onclick="showToast('💳 Próximamente — agregar tarjeta')">
+        <div class="wh-add-card-ico">＋</div>
+        <div class="wh-add-card-lbl">Agregar tarjeta</div>
+      </div>
+    </div>
+
+    <!-- ÚLTIMOS MOVIMIENTOS -->
+    <div class="wh-sec">Últimos movimientos</div>
+    <div class="wh-txs" id="wh-txs"></div>
+  </div>
+
+  <!-- MODAL ACCIÓN -->
+  <div class="wh-modal" id="wh-modal" onclick="if(event.target===this)closeWalletModal()">
+    <div class="wh-modal-sheet">
+      <div class="wh-modal-handle"></div>
+      <div class="wh-modal-title" id="wh-modal-title">Depositar</div>
+      <div class="wh-modal-sub" id="wh-modal-sub">Ingresá el monto a depositar</div>
+      <div class="wh-modal-balance">Saldo actual: <span id="wh-modal-bal">AR$ 12.450</span></div>
+      <div class="wh-amount-display" id="wh-amount-display"><span class="currency">AR$</span><span id="wh-amount-val">0</span></div>
+      <div id="wh-extra-input"></div>
+      <div class="wh-numpad" id="wh-numpad">
+        <button class="wh-numpad-btn" onclick="walletNum('1')">1</button>
+        <button class="wh-numpad-btn" onclick="walletNum('2')">2</button>
+        <button class="wh-numpad-btn" onclick="walletNum('3')">3</button>
+        <button class="wh-numpad-btn" onclick="walletNum('4')">4</button>
+        <button class="wh-numpad-btn" onclick="walletNum('5')">5</button>
+        <button class="wh-numpad-btn" onclick="walletNum('6')">6</button>
+        <button class="wh-numpad-btn" onclick="walletNum('7')">7</button>
+        <button class="wh-numpad-btn" onclick="walletNum('8')">8</button>
+        <button class="wh-numpad-btn" onclick="walletNum('9')">9</button>
+        <button class="wh-numpad-btn" onclick="walletNum('000')">000</button>
+        <button class="wh-numpad-btn" onclick="walletNum('0')">0</button>
+        <button class="wh-numpad-btn del" onclick="walletDel()">⌫</button>
+      </div>
+      <button class="wh-confirm-btn" id="wh-confirm-btn" onclick="confirmWallet()">Confirmar</button>
+    </div>
+  </div>
+
+  <nav class="navbar">
+    <div class="ni" data-nav="home"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 11L11 3l8 8" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/><path d="M5 9v9h4v-5h4v5h4V9" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ni-lbl">Inicio</span></div>
+    <div class="ni" data-nav="offers"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ni-lbl">Ofertas</span></div>
+    <div class="ni" data-nav="ai"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4" y="4" width="14" height="14" rx="4" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M8 11h6M11 8v6" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg><span class="ni-lbl">SALGO IA</span></div>
+    <div class="ni active" data-nav="wallet"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><defs><linearGradient id="wg1" x1="0" y1="0" x2="22" y2="22"><stop stop-color="#00b876"/><stop offset="1" stop-color="#00e5ff"/></linearGradient></defs><rect x="3" y="6" width="16" height="12" rx="3" stroke="url(#wg1)" stroke-width="1.5"/><path d="M3 10h16" stroke="url(#wg1)" stroke-width="1.5"/><circle cx="16" cy="14" r="1.5" fill="url(#wg1)"/></svg><span class="ni-lbl" style="background:linear-gradient(135deg,#00b876,#00e5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Billetera</span><div class="ni-dot" style="background:#00b876;box-shadow:0 0 6px #00b876;"></div></div>
+    <div class="ni" data-nav="profile"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="8" r="3.5" stroke="rgba(10,10,20,0.3)" stroke-width="1.5"/><path d="M4 19c0-3.87 3.13-7 7-7s7 3.13 7 7" stroke="rgba(10,10,20,0.3)" stroke-width="1.5" stroke-linecap="round"/></svg><span class="ni-lbl">Perfil</span></div>
+  </nav>
+</div>
+
+<div class="screen hidden" id="screen-friends">
+  <div class="status"><span class="status-time">23:18</span><span class="status-icons">📶 🔋</span></div>
+  <div class="home-hdr">
+    <div class="logo-row">
+      <span class="logo-name" style="font-size:22px;font-weight:800;letter-spacing:-.5px;">Amigos</span>
+      <div style="display:flex;gap:8px;">
+        <div onclick="showToast('Buscar amigos — próximamente')" style="width:34px;height:34px;border-radius:10px;background:var(--bg2);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.06);">🔍</div>
+        <div onclick="showToast('Agregar amigo — próximamente')" style="width:34px;height:34px;border-radius:10px;background:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(255,45,85,.3);">＋</div>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="sec-lbl">Grupos activos</div>
+    <div id="groups-list"></div>
+    <div id="friends-list"></div>
+    <div style="height:100px;"></div>
+  </div>
+  <nav class="navbar" style="justify-content:space-around;">
+    <div class="ni" data-nav="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12L12 3l9 9" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/><path d="M5 10v10h5v-6h4v6h5V10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ni-lbl">Inicio</span></div>
+    <div class="ni" data-nav="offers"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ni-lbl">Ofertas</span></div>
+    <div class="ni active" data-nav="friends"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="#ff2d55" stroke-width="1.8"/><path d="M3 18c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#ff2d55" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="8" r="2.5" stroke="#ff2d55" stroke-width="1.5"/><path d="M17 14c2.21 0 4 1.79 4 4" stroke="#ff2d55" stroke-width="1.5" stroke-linecap="round"/></svg><span class="ni-lbl" style="color:var(--accent);">Amigos</span><div class="ni-dot"></div></div>
+    <div class="ni" data-nav="notifs" style="position:relative;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#8e8e93" stroke-width="1.8"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ni-lbl">Alertas</span><span class="notif-badge2" id="notif-badge">2</span></div>
+    <div class="ni" data-nav="profile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#8e8e93" stroke-width="1.8"/><path d="M4 20c0-4.42 3.58-8 8-8s8 3.58 8 8" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ni-lbl">Perfil</span></div>
+  </nav>
+</div>
+
+<!-- SCREEN: NOTIFICACIONES -->
+<div class="screen hidden" id="screen-notifs">
+  <div class="status"><span class="status-time">23:18</span><span class="status-icons">📶 🔋</span></div>
+  <div class="home-hdr">
+    <div class="logo-row">
+      <span class="logo-name" style="font-size:22px;font-weight:800;letter-spacing:-.5px;">Alertas</span>
+      <div onclick="markAllRead()" style="font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;padding:6px 12px;background:rgba(255,45,85,.08);border-radius:10px;">Leer todas</div>
+    </div>
+  </div>
+  <div class="content">
+    <div id="notifs-list"></div>
+    <div style="height:100px;"></div>
+  </div>
+  <nav class="navbar" style="justify-content:space-around;">
+    <div class="ni" data-nav="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12L12 3l9 9" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/><path d="M5 10v10h5v-6h4v6h5V10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ni-lbl">Inicio</span></div>
+    <div class="ni" data-nav="offers"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ni-lbl">Ofertas</span></div>
+    <div class="ni" data-nav="friends"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="#8e8e93" stroke-width="1.8"/><path d="M3 18c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="8" r="2.5" stroke="#8e8e93" stroke-width="1.5"/><path d="M17 14c2.21 0 4 1.79 4 4" stroke="#8e8e93" stroke-width="1.5" stroke-linecap="round"/></svg><span class="ni-lbl">Amigos</span></div>
+    <div class="ni active" data-nav="notifs" style="position:relative;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#ff2d55" stroke-width="1.8"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#ff2d55" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ni-lbl" style="color:var(--accent);">Alertas</span><div class="ni-dot"></div></div>
+    <div class="ni" data-nav="profile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#8e8e93" stroke-width="1.8"/><path d="M4 20c0-4.42 3.58-8 8-8s8 3.58 8 8" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ni-lbl">Perfil</span></div>
+  </nav>
+</div>
+
+<!-- MODAL RESERVA -->
+<div class="resv-modal" id="resv-modal">
+  <div class="resv-sheet">
+    <div class="resv-handle"></div>
+    <div class="resv-title">Reservar mesa</div>
+    <div class="resv-subtitle" id="resv-place-name">Samsara Beach</div>
+    <label class="resv-field-lbl">Fecha</label>
+    <input class="resv-input" id="resv-fecha" type="date">
+    <div class="resv-row">
+      <div style="flex:1;"><label class="resv-field-lbl">Hora</label><input class="resv-input" id="resv-hora" type="time" value="23:00"></div>
+      <div style="flex:1;"><label class="resv-field-lbl">Personas</label><select class="resv-input" id="resv-cant"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6+</option></select></div>
+    </div>
+    <label class="resv-field-lbl">Nota (opcional)</label>
+    <input class="resv-input" placeholder="Ej: cumpleaños, mesa VIP...">
+    <button class="resv-btn" onclick="confirmReserva()">🎟️ Confirmar reserva</button>
+    <div style="text-align:center;margin-top:10px;font-size:12px;color:var(--txt3);cursor:pointer;" onclick="closeReserva()">Cancelar</div>
+  </div>
+</div>
+
+<!-- STORY MODAL -->
+<div class="story-modal" id="story-modal">
+  <div class="story-bg" id="story-bg"></div>
+  <div class="story-overlay"></div>
+  <div class="story-prog-row">
+    <div class="story-prog-bar" id="sp0"></div>
+    <div class="story-prog-bar" id="sp1"></div>
+    <div class="story-prog-bar" id="sp2"></div>
+    <div class="story-prog-bar" id="sp3"></div>
+    <div class="story-prog-bar" id="sp4"></div>
+    <div class="story-prog-bar" id="sp5"></div>
+  </div>
+  <div class="story-hdr">
+    <div class="story-hdr-l">
+      <div class="story-hdr-av" id="story-av-ico">🌊</div>
+      <div><div class="story-hdr-name" id="story-name">Samsara Beach</div><div class="story-hdr-status" id="story-status">🟢 Abierto</div></div>
+    </div>
+    <div class="story-close" onclick="closeStory()">✕</div>
+  </div>
+  <div class="story-body">
+    <div class="story-main" id="story-main-text">85%</div>
+    <div class="story-sub" id="story-sub-text">lleno ahora</div>
+    <div class="story-crowd-row">
+      <div class="story-crowd-trk"><div class="story-crowd-fill2" id="story-crowd-fill" style="width:85%;background:#ff3b30;"></div></div>
+      <div class="story-crowd-pct2" id="story-crowd-pct">85%</div>
+    </div>
+  </div>
+  <div class="story-cta">
+    <div class="story-cta-btn" onclick="closeStory();setTimeout(()=>openDetail(storiesData[currentStory]?.id||0),300)">Ver detalles del lugar →</div>
+  </div>
+  <div class="story-tap-l" onclick="prevStory()"></div>
+  <div class="story-tap-r" onclick="nextStory()"></div>
+</div>
+
+
+<!-- SCREEN: OFERTAS -->
+<div class="screen hidden" id="screen-offers">
+  <div class="status"><span class="status-time">23:18</span><span class="status-icons">📶 🔋</span></div>
+  <div class="ofertas-header">
+    <div class="logo-row">
+      <div>
+        <span class="logo-name" style="font-size:22px;font-weight:800;letter-spacing:-.5px;">Ofertas</span>
+        <div style="font-size:12px;color:var(--txt3);margin-top:2px;">Descuentos reales de esta semana</div>
+      </div>
+      <div class="loc-chip" onclick="openCityModal()">
+        <div class="loc-dot"></div>
+        <span class="city-display">Mar del Plata</span> ▾
+      </div>
+    </div>
+  </div>
+
+  <!-- Selector de día -->
+  <div class="oferta-day-strip" id="day-strip"></div>
+
+  <!-- Contenido dinámico -->
+  <div class="content" id="ofertas-content" style="padding-bottom:20px;"></div>
+
+  <nav class="navbar">
+    <div class="ni" data-nav="home"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12L12 3l9 9" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/><path d="M5 10v10h5v-6h4v6h5V10" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ni-lbl">Inicio</span></div>
+    <div class="ni active" data-nav="offers"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#ff2d55" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="ni-lbl" style="color:var(--accent);">Ofertas</span><div class="ni-dot"></div></div>
+    <div class="ni" data-nav="friends"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="#8e8e93" stroke-width="1.8"/><path d="M3 18c0-3.31 2.69-6 6-6s6 2.69 6 6" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="8" r="2.5" stroke="#8e8e93" stroke-width="1.5"/><path d="M17 14c2.21 0 4 1.79 4 4" stroke="#8e8e93" stroke-width="1.5" stroke-linecap="round"/></svg><span class="ni-lbl">Amigos</span></div>
+    <div class="ni" data-nav="notifs" style="position:relative;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#8e8e93" stroke-width="1.8"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ni-lbl">Alertas</span></div>
+    <div class="ni" data-nav="profile"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#8e8e93" stroke-width="1.8"/><path d="M4 20c0-4.42 3.58-8 8-8s8 3.58 8 8" stroke="#8e8e93" stroke-width="1.8" stroke-linecap="round"/></svg><span class="ni-lbl">Perfil</span></div>
+  </nav>
+</div>
+
+<!-- MODAL: NOMBRE -->
+<div class="modal-overlay" id="name-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div style="font-size:16px;font-weight:600;margin-bottom:6px;">¿Cómo te llamás?</div>
+    <div style="font-size:13px;color:var(--txt3);margin-bottom:14px;">Para aparecer en el chat y marcar que vas</div>
+    <input id="modal-name" class="chat-input" style="width:100%;margin-bottom:10px;" placeholder="Tu nombre..." maxlength="20">
+    <button class="btn-main" style="width:100%;" onclick="saveName()">Listo</button>
+  </div>
+</div>
+
+
+
+<!-- MODAL CIUDAD -->
+<div class="city-modal" id="city-modal" onclick="if(event.target===this)closeCityModal()">
+  <div class="city-sheet">
+    <div class="city-handle"></div>
+    <div class="city-title">📍 Elegí tu ciudad</div>
+    <div class="city-sub">SALGO se adapta a donde estés</div>
+
+    <div class="city-search">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="#aeaeb2" stroke-width="1.3"/><path d="M11 11l3 3" stroke="#aeaeb2" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input id="city-search-inp" placeholder="Buscar ciudad..." oninput="filterCities(this.value)">
+    </div>
+
+    <div class="city-custom-row">
+      <input class="city-custom-inp" id="city-custom-inp" placeholder="Escribí cualquier ciudad del mundo..." onkeydown="if(event.key==='Enter')setCustomCity()">
+      <button class="city-custom-btn" onclick="setCustomCity()">Agregar</button>
+    </div>
+
+    <div class="city-popular-lbl">Ciudades populares</div>
+    <div class="city-list" id="city-list"></div>
+
+    <button class="city-confirm-btn" onclick="closeCityModal()">Listo</button>
+  </div>
+</div>
+
+
+<!-- MAPA COMPLETO -->
+<div class="fullmap-modal" id="fullmap-modal">
+  <div class="fullmap-header">
+    <div class="fullmap-title">📍 Lugares en <span id="fullmap-city">Mar del Plata</span></div>
+    <div class="fullmap-close" id="fullmap-close">✕</div>
+  </div>
+  <div class="fullmap-content">
+    <div class="fullmap-map" id="fullmap-bg"></div>
+    <div class="fullmap-list">
+      <div class="fullmap-lbl">⭐ Más recomendados esta noche</div>
+      <div id="fullmap-items"></div>
+    </div>
+  </div>
+</div>
+
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script type="module" src="src/js/main.js"></script>
+<script>
+  // Service worker: hace que la app se pueda instalar y abra sin señal.
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch((err) => console.warn('sw:', err));
+    });
+  }
+</script>
+</body>
+</html>
