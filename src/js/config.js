@@ -18,8 +18,8 @@
 // `service_role`: esa saltea todas las reglas de acceso. Vive solo en el panel
 // de Supabase.
 
-export const SUPABASE_URL = '';
-export const SUPABASE_ANON_KEY = '';
+export const SUPABASE_URL = 'https://xpsybuxkfpslnbobfeec.supabase.co/rest/v1/';
+export const SUPABASE_ANON_KEY = 'sb_publishable_EFlOn9XqvwU5oJaqQkuE-w_gcm9EMBF';
 
 /** ¿Está configurado el backend? Si no, la app usa el modo local. */
 export const hasBackend = () =>
