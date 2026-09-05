@@ -296,10 +296,13 @@ rollback;
 
 \echo ''
 \echo '=== COBERTURA ==='
-select chequear('RLS activo en las 5 tablas', (
-  select count(*) = 5 from pg_tables t
+-- Sin número fijo a propósito: así el test no hay que tocarlo al agregar una
+-- tabla, y sobre todo AVISA si alguien crea una nueva y se olvida del RLS
+-- (que es exactamente el error que dejaría los datos expuestos).
+select chequear('TODAS las tablas tienen RLS activo', (
+  select count(*) = 0 from pg_tables t
    join pg_class c on c.relname = t.tablename and c.relnamespace = 'public'::regnamespace
-  where t.schemaname = 'public' and c.relrowsecurity
+  where t.schemaname = 'public' and not c.relrowsecurity
 ));
 
 \echo ''

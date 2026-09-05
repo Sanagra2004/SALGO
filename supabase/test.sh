@@ -41,7 +41,10 @@ for f in "$HERE"/migrations/*.sql; do
 done
 
 echo "▶ corriendo tests de acceso…"
+# 00_local_stub.sql imita a Supabase y no es un test; el resto sí.
+# 01 define los helpers (actuar_como, filas, rechazado…) que usan los demás,
+# así que el orden importa: van todos en la misma sesión de psql.
 psql -h /tmp -p $PORT -U postgres -d salgo -v ON_ERROR_STOP=1 \
-  -f "$HERE/tests/01_rls_test.sql" 2>&1 \
-  | grep -E "^===|NOTICE|ERROR|TODOS LOS" \
+  $(for f in "$HERE"/tests/0[1-9]_*.sql; do printf ' -f %s' "$f"; done) 2>&1 \
+  | grep -E "^===|NOTICE|ERROR|TODOS LOS|TESTS DE" \
   | sed 's/.*NOTICE:  //; s/psql:[^ ]* //'

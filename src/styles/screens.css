@@ -776,3 +776,26 @@
    noche", "Grupos activos"): la clase no tenía estilos y quedaban pegados al
    borde izquierdo. */
 .sec-lbl { padding: 0 16px 10px; font-size: 17px; font-weight: 700; letter-spacing: -.3px; color: var(--txt); flex-shrink: 0; }
+
+/* ── SALGO Pro: lista de espera y beneficios honestos ────────────────── */
+.pro-wait { margin: 4px 16px 8px; background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 18px 16px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+.pro-wait-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800; letter-spacing: -.3px; color: var(--txt); margin-bottom: 5px; }
+.pro-wait-sub { font-size: 12.5px; color: var(--txt2); line-height: 1.5; margin-bottom: 14px; }
+.pro-wait-inp { width: 100%; background: var(--bg3); border: 1px solid var(--border); border-radius: 13px; padding: 13px 14px; font-family: inherit; font-size: 15px; color: var(--txt); outline: none; }
+.pro-wait-inp:focus { border-color: rgba(255,45,120,.45); background: #fff; }
+.pro-wait-msg { font-size: 12px; line-height: 1.45; margin: 8px 2px 0; min-height: 0; }
+.pro-wait-msg.error { color: var(--red); }
+.pro-wait .pro-cta-btn { margin-top: 12px; }
+.pro-wait-ok { text-align: center; }
+.pro-wait-ok-ico { font-size: 34px; margin-bottom: 8px; }
+.pro-wait-undo { margin-top: 14px; background: none; border: none; font-family: inherit; font-size: 12px; color: var(--txt3); text-decoration: underline; cursor: pointer; }
+
+/* Etiquetas que dicen de qué depende cada beneficio. */
+.pro-benefit-tag.tag-soon { background: rgba(245,158,11,.12); color: #b45309; }
+.pro-benefit-tag.tag-work { background: rgba(59,130,246,.12); color: #1d4ed8; }
+
+.pro-honest { margin: 14px 16px 4px; background: #fff6e5; border: 1px solid #f5c96b; border-radius: 14px; padding: 13px 15px; font-size: 12.5px; line-height: 1.55; color: #6b4a00; }
+.pro-honest b { display: block; margin-bottom: 3px; color: #4a3300; }
+
+/* La tarjeta de puntos ya no muestra un saldo: es una idea, no un estado. */
+.pro-points-idea .pro-canje-item { cursor: default; opacity: .75; }

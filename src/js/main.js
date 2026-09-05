@@ -9,6 +9,7 @@ import * as chat from './chat.js';
 import * as ai from './ai.js';
 import * as offers from './offers.js';
 import * as demo from './demo.js';
+import * as pro from './pro.js';
 import * as profile from './profile.js';
 import { requestLocation, useCityCenter, isPrecise } from './geo.js';
 
@@ -55,7 +56,7 @@ function onEnterScreen(name) {
   if (name === 'offers') { offers.renderDayStrip(); offers.renderOfertas(); }
   if (name === 'notifs') offers.renderNotifs();
   if (name === 'wallet') demo.renderWalletTxs();
-  if (name === 'pro') demo.renderPuntos();
+  if (name === 'pro') pro.initPro();
   if (name === 'profile') profile.renderProfile();
   if (name === 'home') places.renderHomeMap();
 }
@@ -193,9 +194,7 @@ function exposeForInlineHandlers() {
     walletNum: demo.walletNum,
     walletDel: demo.walletDel,
     confirmWallet: demo.confirmWallet,
-    selectPlan: demo.selectPlan,
-    activatePro: demo.activatePro,
-    canjear: demo.canjear,
+    selectPlan: pro.selectPlan,
     submitCard: demo.submitCard,
     selectNetwork: demo.selectNetwork,
     formatCardNum: demo.formatCardNum,
@@ -240,6 +239,7 @@ async function init() {
   profile.bindProfileEvents();
   offers.bindOffersEvents();
   demo.bindDemoEvents();
+  pro.bindProEvents();
   ai.bindAiEvents();
 
   await cities.initCities();
@@ -251,8 +251,7 @@ async function init() {
   profile.renderProfile();
   offers.initStories();
   offers.renderNotifs();
-  demo.selectPlan(1);
-  demo.renderPuntos();
+  pro.selectPlan(1);
 
   // Recién ahora, con la app ya en pantalla, pedimos la ubicación.
   setTimeout(async () => {

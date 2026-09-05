@@ -304,6 +304,29 @@ export const supabaseStore = {
   },
 
   /**
+   * La suscripción Pro del usuario, o null.
+   *
+   * Es de solo lectura a propósito: la tabla no acepta escrituras desde la
+   * app. Quien la escribe es la función del servidor, después de que Mercado
+   * Pago confirma el pago.
+   */
+  async getSubscription() {
+    const db = getClient();
+    const uid = getUserId();
+    if (!db || !uid) return null;
+    const { data } = await db.from('subscriptions').select('*').eq('user_id', uid).maybeSingle();
+    return data || null;
+  },
+
+  /** ¿Es Pro ahora mismo? Lo decide la base, no el navegador. */
+  async isPro() {
+    const db = getClient();
+    if (!db) return false;
+    const { data } = await db.rpc('is_pro');
+    return Boolean(data);
+  },
+
+  /**
    * Suscripción a cambios.
    *
    * Misma firma que en el modo local, pero acá los avisos vienen del servidor:
@@ -347,6 +370,20 @@ function abrirCanal(topic) {
       .on('postgres_changes',
         { event: '*', schema: 'public', table: topic === 'going' ? 'going' : 'places' },
         () => { invalidate(); emit(topic, null); })
+      .subscribe();
+    channels.set(topic, ch);
+    return;
+  }
+
+  // La suscripción propia: así la pantalla se actualiza sola cuando el pago se
+  // confirma, sin que la persona tenga que recargar al volver de Mercado Pago.
+  if (topic === 'subscriptions') {
+    const uid = getUserId();
+    if (!uid) return;
+    const ch = db.channel('salgo-subs')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'subscriptions', filter: `user_id=eq.${uid}` },
+        () => emit(topic, null))
       .subscribe();
     channels.set(topic, ch);
   }

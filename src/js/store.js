@@ -35,6 +35,8 @@ if (!hasBackend()) {
   store.getProfile = async () => null;
   store.saveProfile = async () => null;
   store.isAdmin = async () => true;   // en local el panel es del que lo abre
+  store.getSubscription = async () => null;
+  store.isPro = async () => false;    // sin servidor no hay suscripción posible
   store.setCrowd = async (placeId, pct) => {
     const p = await store.getPlace(placeId);
     if (p) await store.savePlace({ ...p, crowd: pct });

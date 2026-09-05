@@ -1,4 +1,7 @@
-// SALGO — pantallas de DEMOSTRACIÓN: Tarjeta, Billetera y Pro.
+// SALGO — pantallas de DEMOSTRACIÓN: Tarjeta y Billetera.
+//
+// (SALGO Pro se mudó a pro.js: dejó de ser una demo y ahora junta gente
+//  en una lista de espera real, con la suscripción lista para encender.)
 //
 // ⚠️ ACÁ NO SE MUEVE PLATA DE VERDAD. ⚠️
 //
@@ -8,8 +11,9 @@
 //
 // Para que sean reales hace falta bastante más que código: integrar Mercado
 // Pago, verificación de identidad (KYC), términos y condiciones, y las
-// obligaciones que trae mover dinero de terceros en Argentina. Es la Etapa 2
-// del roadmap y conviene hablarlo con un contador antes de arrancar.
+// obligaciones que trae mover dinero de terceros en Argentina. Conviene
+// hablarlo con un contador antes de arrancar: cobrar una suscripción es una
+// cosa, custodiar plata de los usuarios es otra muy distinta.
 //
 // Mientras tanto la app muestra un cartel de DEMO en estas tres pantallas para
 // que ningún usuario que la esté probando se confunda.
@@ -182,55 +186,6 @@ export function confirmWallet() {
   renderWalletTxs();
 }
 
-// ---------- SALGO Pro ----------
-
-let selectedPlan = 1;
-let puntos = 1250;
-
-const PLAN_PRICES = {
-  1: ['AR$ 2.000', '/mes', '⚡ 1 semana gratis para nuevos usuarios'],
-  3: ['AR$ 1.800', '/mes', '💰 Ahorrás AR$ 600 vs mensual'],
-  12: ['AR$ 1.500', '/mes', '🔥 Ahorrás AR$ 6.000 vs mensual — mejor opción'],
-};
-
-export function selectPlan(months) {
-  if (!PLAN_PRICES[months]) return;
-  selectedPlan = months;
-  document.querySelectorAll('.pro-plan').forEach((el) => { el.className = 'pro-plan unselected'; });
-  const el = $('plan-' + months + 'mes');
-  if (el) el.className = 'pro-plan selected';
-  const [price, period, note] = PLAN_PRICES[months];
-  setText('pro-price-display', price);
-  setText('pro-period-display', period);
-  setText('pro-saving-note', note);
-}
-
-export function activatePro() {
-  const nombres = { 1: 'mensual', 3: 'trimestral', 12: 'anual' };
-  showToast('🚀 Suscripción ' + nombres[selectedPlan] + ' — próximamente');
-}
-
-export function canjear(nombre, pts) {
-  if (puntos < pts) {
-    showToast('❌ Te faltan ' + (pts - puntos) + ' puntos para este canje');
-    return;
-  }
-  puntos -= pts;
-  renderPuntos();
-  showToast('✅ ¡Canjeaste: ' + nombre + '! Mostrá el QR en el local 🎉 (demo)');
-}
-
-export function renderPuntos() {
-  setText('user-points', puntos.toLocaleString('es-AR'));
-  const bar = document.querySelector('.pro-points-bar-fill');
-  if (bar) bar.style.width = Math.min(100, Math.round((puntos / 2000) * 100)) + '%';
-  const next = document.querySelector('.pro-points-next');
-  if (next) {
-    const falta = Math.max(0, 2000 - puntos);
-    next.textContent = falta > 0 ? falta + ' puntos más para subir a ORO 🥇' : '¡Sos nivel ORO! 🥇';
-  }
-}
-
 export function bindDemoEvents() {
   $('card-name-inp')?.addEventListener('input', updateCardPreview);
   $('card-num-inp')?.addEventListener('input', (e) => formatCardNum(e.target));
@@ -242,8 +197,5 @@ export function bindDemoEvents() {
     const key = ev.target.closest('[data-num]');
     if (!key) return;
     if (key.dataset.num === 'del') walletDel(); else walletNum(key.dataset.num);
-  });
-  document.querySelectorAll('[data-canje]').forEach((el) => {
-    el.addEventListener('click', () => canjear(el.dataset.canje, Number(el.dataset.pts) || 0));
   });
 }

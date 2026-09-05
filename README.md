@@ -31,7 +31,7 @@ servidor (ver `src/js/config.js`):
 | Ofertas por día | ⚠️ Datos de ejemplo | ⚠️ Datos de ejemplo |
 | Amigos y grupos | ⚠️ Datos de ejemplo | ⚠️ Datos de ejemplo |
 | Billetera y tarjeta | 🔶 **DEMO. No mueve plata real** | 🔶 DEMO |
-| Suscripción Pro | 🔶 DEMO | 🔶 DEMO |
+| Suscripción Pro | 🔶 Demo | ⏸️ **Lista de espera.** El cobro está construido pero apagado hasta que haya locales adheridos |
 | SALGO IA | ✅ Motor local, sin costo | ✅ Igual (la IA externa es Etapa 2) |
 
 Lo que falta después está en [docs/ROADMAP.md](docs/ROADMAP.md).
@@ -112,6 +112,7 @@ Los archivos nuevos de esta etapa dentro de `src/js/`:
 config.js           Las claves del servidor. Es lo único que hay que completar
 auth.js             La sesión del usuario (anónima primero)
 store.supabase.js   El mismo store, pero contra el servidor
+pro.js              Lista de espera y suscripción Pro
 ```
 
 ## ⭐ La regla más importante del proyecto
@@ -131,6 +132,8 @@ pasa a ser reescribir la app.
 
 - **[docs/SUPABASE.md](docs/SUPABASE.md)** — cómo poner el servidor en marcha,
   paso a paso. Unos 20 minutos, sin costo.
+- **[docs/MERCADOPAGO.md](docs/MERCADOPAGO.md)** — cómo encender el cobro de la
+  suscripción, y qué hay que resolver antes de encenderlo.
 - **[docs/AUDITORIA.md](docs/AUDITORIA.md)** — qué encontramos en el prototipo,
   qué se arregló y qué falta. Escrito para leer sin saber programar.
 - **[docs/ROADMAP.md](docs/ROADMAP.md)** — las etapas hasta el lanzamiento, con

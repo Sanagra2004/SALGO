@@ -243,7 +243,7 @@
 
 <!-- SCREEN: SALGO PRO -->
 <div class="screen hidden pro-screen" id="screen-pro">
-  <div class="demo-badge">DEMO · la suscripción todavía no se puede contratar</div>
+  <div class="demo-badge">EN PREPARACIÓN · todavía no cobramos nada</div>
   <div class="status" style="position:absolute;top:0;left:0;right:0;z-index:2;">
     <span class="status-time" style="color:#fff;">23:18</span>
     <div class="status-icons" style="color:#fff;">📶 🔋</div>
@@ -259,149 +259,136 @@
       </div>
       <span class="pro-crown">⭐</span>
       <div class="pro-hero-title">SALGO <span>PRO</span></div>
-      <div class="pro-hero-sub">La noche sin límites.<br>Beneficios exclusivos para salir mejor.</div>
+      <div class="pro-hero-sub">Lo estamos armando.<br>Anotate y te avisamos cuando esté.</div>
       <div class="pro-price-row">
-        <span class="pro-price-val" id="pro-price-display">AR$ 2.000</span>
+        <span class="pro-price-val" id="pro-price-display">AR$ 1.500</span>
         <span class="pro-price-period" id="pro-period-display">/mes</span>
       </div>
-      <div class="pro-price-note" id="pro-saving-note">⚡ 1 semana gratis para nuevos usuarios</div>
+      <div class="pro-price-note" id="pro-saving-note">Precio estimado · todavía no se cobra</div>
     </div>
 
     <!-- PLANES -->
+    <div class="pro-benefits-title">¿Cuál elegirías?</div>
     <div class="pro-plans">
       <div class="pro-plan selected" id="plan-1mes" onclick="selectPlan(1)">
         <div class="pro-plan-badge plan-badge-flex">Mensual</div>
-        <div class="pro-plan-price">AR$ 2.000</div>
+        <div class="pro-plan-price">AR$ 1.500</div>
         <div class="pro-plan-period">/mes</div>
       </div>
       <div class="pro-plan unselected" id="plan-3mes" onclick="selectPlan(3)">
         <div class="pro-plan-badge plan-badge-popular">⭐ Popular</div>
-        <div class="pro-plan-price">AR$ 1.800</div>
+        <div class="pro-plan-price">AR$ 1.350</div>
         <div class="pro-plan-period">/mes</div>
-        <div class="pro-plan-total">Total: AR$ 5.400</div>
+        <div class="pro-plan-total">Total: AR$ 4.050</div>
       </div>
       <div class="pro-plan unselected" id="plan-12mes" onclick="selectPlan(12)">
-        <div class="pro-plan-badge plan-badge-save">Ahorrás 25%</div>
-        <div class="pro-plan-price">AR$ 1.500</div>
+        <div class="pro-plan-badge plan-badge-save">Ahorrás 20%</div>
+        <div class="pro-plan-price">AR$ 1.200</div>
         <div class="pro-plan-period">/mes</div>
-        <div class="pro-plan-total">Total: AR$ 18.000</div>
+        <div class="pro-plan-total">Total: AR$ 14.400</div>
       </div>
     </div>
 
+    <!-- LISTA DE ESPERA -->
+    <div class="pro-wait">
+      <div class="pro-wait-title">Avisame cuando esté</div>
+      <div class="pro-wait-sub">
+        Te escribimos cuando Pro esté funcionando de verdad. No te cobramos nada
+        ahora ni guardamos ninguna tarjeta.
+      </div>
+      <input class="pro-wait-inp" id="pro-wait-email" type="email"
+             inputmode="email" autocomplete="email" placeholder="tu@email.com">
+      <div class="pro-wait-msg" id="pro-wait-msg"></div>
+      <button class="pro-cta-btn" id="pro-wait-btn" data-action="anotarse">Anotarme en la lista</button>
+    </div>
+
     <!-- TARJETA PUNTOS -->
-    <div class="pro-benefits-title">🏆 Tu comunidad de puntos</div>
-    <div class="pro-points-card">
+    <div class="pro-benefits-title">🏆 La idea de los puntos</div>
+    <div class="pro-points-card pro-points-idea">
       <div class="pro-points-glow"></div>
       <div class="pro-points-title">SALGO Points</div>
-      <div class="pro-points-sub">Acumulás puntos en cada salida y los canjeás por beneficios</div>
-      <div class="pro-points-bal">
-        <span class="pro-points-num" id="user-points">1,240</span>
-        <span class="pro-points-lbl">pts disponibles</span>
+      <div class="pro-points-sub">
+        Juntarías puntos cada vez que salís y los cambiarías por tragos o entradas.
+        Todavía no hay nada acumulado: arranca cuando Pro esté funcionando.
       </div>
-      <div class="pro-points-bar-wrap">
-        <div class="pro-points-bar-lbl"><span>Nivel Plata</span><span>Oro: 2.000 pts</span></div>
-        <div class="pro-points-bar"><div class="pro-points-bar-fill" style="width:62%;"></div></div>
-      </div>
-      <div class="pro-points-next">760 puntos más para subir a ORO 🥇</div>
       <div class="pro-canje-row">
-        <div class="pro-canje-item" onclick="canjear('Trago gratis',300)">
-          <div class="pro-canje-ico">🍹</div>
-          <div class="pro-canje-name">Trago gratis</div>
-          <div class="pro-canje-pts">300 pts</div>
-        </div>
-        <div class="pro-canje-item" onclick="canjear('Entrada gratis',800)">
-          <div class="pro-canje-ico">🎟️</div>
-          <div class="pro-canje-name">Entrada gratis</div>
-          <div class="pro-canje-pts">800 pts</div>
-        </div>
-        <div class="pro-canje-item" onclick="canjear('20% descuento',500)">
-          <div class="pro-canje-ico">💸</div>
-          <div class="pro-canje-name">20% descuento</div>
-          <div class="pro-canje-pts">500 pts</div>
-        </div>
-        <div class="pro-canje-item" onclick="canjear('Meet & Greet DJ',1500)">
-          <div class="pro-canje-ico">🎧</div>
-          <div class="pro-canje-name">Meet & Greet</div>
-          <div class="pro-canje-pts">1.500 pts</div>
-        </div>
+        <div class="pro-canje-item"><div class="pro-canje-ico">🍹</div><div class="pro-canje-name">Trago</div><div class="pro-canje-pts">300 pts</div></div>
+        <div class="pro-canje-item"><div class="pro-canje-ico">🎟️</div><div class="pro-canje-name">Entrada</div><div class="pro-canje-pts">800 pts</div></div>
+        <div class="pro-canje-item"><div class="pro-canje-ico">💸</div><div class="pro-canje-name">Descuento</div><div class="pro-canje-pts">500 pts</div></div>
+        <div class="pro-canje-item"><div class="pro-canje-ico">🎧</div><div class="pro-canje-name">Meet &amp; Greet</div><div class="pro-canje-pts">1.500 pts</div></div>
       </div>
     </div>
 
     <!-- BENEFICIOS -->
-    <div class="pro-benefits-title">✦ Todos los beneficios Pro</div>
+    <!-- Cada uno dice de qué depende. Prometer lo que no se puede cumplir el
+         día que alguien paga es lo que quema la credibilidad de la app: si el
+         descuento no existe en la puerta del boliche, el problema no es el
+         reembolso, es que esa persona no vuelve ni recomienda. -->
+    <div class="pro-benefits-title">✦ Qué va a incluir Pro</div>
     <div class="pro-benefits">
 
       <div class="pro-benefit">
         <div class="pro-benefit-ico" style="background:rgba(255,45,120,0.1);">🚀</div>
         <div class="pro-benefit-info">
           <div class="pro-benefit-name">Prioridad de ingreso</div>
-          <div class="pro-benefit-desc">Tu QR Pro te permite entrar antes que la fila normal. Sin esperar en la puerta.</div>
+          <div class="pro-benefit-desc">Entrar sin hacer la fila. Necesita que cada local lo reconozca en la puerta.</div>
         </div>
-        <div class="pro-benefit-tag" style="background:rgba(255,45,120,0.1);color:#ff2d78;">VIP</div>
+        <div class="pro-benefit-tag tag-soon">Falta acuerdo</div>
       </div>
 
       <div class="pro-benefit">
         <div class="pro-benefit-ico" style="background:rgba(0,184,118,0.1);">🍻</div>
         <div class="pro-benefit-info">
-          <div class="pro-benefit-name">15% off en consumiciones</div>
-          <div class="pro-benefit-desc">Descuento automático en bares y boliches adheridos. Mostrás el QR al mozo.</div>
+          <div class="pro-benefit-name">Descuento en consumiciones</div>
+          <div class="pro-benefit-desc">Un porcentaje fijo en bares y boliches adheridos. Todavía no hay locales adheridos.</div>
         </div>
-        <div class="pro-benefit-tag" style="background:rgba(0,184,118,0.1);color:#00b876;">-15%</div>
-      </div>
-
-      <div class="pro-benefit">
-        <div class="pro-benefit-ico" style="background:rgba(180,77,255,0.1);">💳</div>
-        <div class="pro-benefit-info">
-          <div class="pro-benefit-name">Cuotas sin interés</div>
-          <div class="pro-benefit-desc">Pagá en hasta 6 cuotas sin interés con Visa, Mastercard o American Express.</div>
-        </div>
-        <div class="pro-benefit-tag" style="background:rgba(180,77,255,0.1);color:#b44dff;">6 cuotas</div>
-      </div>
-
-      <div class="pro-benefit">
-        <div class="pro-benefit-ico" style="background:rgba(255,204,0,0.12);">⭐</div>
-        <div class="pro-benefit-info">
-          <div class="pro-benefit-name">Comunidad de puntos</div>
-          <div class="pro-benefit-desc">Ganás 10 pts por cada salida, 5 por reseña y 20 por invitar amigos. Canjealos por entradas, tragos y más.</div>
-        </div>
-        <div class="pro-benefit-tag" style="background:rgba(255,204,0,0.12);color:#cc9900;">Points</div>
-      </div>
-
-      <div class="pro-benefit">
-        <div class="pro-benefit-ico" style="background:rgba(0,229,255,0.1);">🔔</div>
-        <div class="pro-benefit-info">
-          <div class="pro-benefit-name">Alertas VIP anticipadas</div>
-          <div class="pro-benefit-desc">Te avisamos 30 min antes que un lugar se llene. Solo los Pro lo saben primero.</div>
-        </div>
-        <div class="pro-benefit-tag" style="background:rgba(0,229,255,0.1);color:#00aacc;">Early</div>
-      </div>
-
-      <div class="pro-benefit">
-        <div class="pro-benefit-ico" style="background:rgba(10,10,20,0.06);">💬</div>
-        <div class="pro-benefit-info">
-          <div class="pro-benefit-name">Chat ilimitado + sin ads</div>
-          <div class="pro-benefit-desc">Mandá todos los mensajes que quieras. Experiencia sin publicidad en toda la app.</div>
-        </div>
-        <div class="pro-benefit-tag" style="background:rgba(10,10,20,0.06);color:rgba(10,10,20,0.5);">Libre</div>
+        <div class="pro-benefit-tag tag-soon">Falta acuerdo</div>
       </div>
 
       <div class="pro-benefit">
         <div class="pro-benefit-ico" style="background:rgba(255,107,0,0.1);">🎟️</div>
         <div class="pro-benefit-info">
-          <div class="pro-benefit-name">Acceso a preventas exclusivas</div>
-          <div class="pro-benefit-desc">Entradas a precio de preventa solo disponibles para miembros Pro, 48hs antes.</div>
+          <div class="pro-benefit-name">Preventas exclusivas</div>
+          <div class="pro-benefit-desc">Entradas a precio de preventa antes que el resto. Necesita acuerdo con los locales.</div>
         </div>
-        <div class="pro-benefit-tag" style="background:rgba(255,107,0,0.1);color:#ff6b00;">Preventa</div>
+        <div class="pro-benefit-tag tag-soon">Falta acuerdo</div>
       </div>
 
+      <div class="pro-benefit">
+        <div class="pro-benefit-ico" style="background:rgba(255,204,0,0.12);">⭐</div>
+        <div class="pro-benefit-info">
+          <div class="pro-benefit-name">Puntos por salir</div>
+          <div class="pro-benefit-desc">Acumular puntos ya lo podemos hacer. Canjearlos por tragos o entradas depende de los locales.</div>
+        </div>
+        <div class="pro-benefit-tag tag-soon">A medias</div>
+      </div>
 
+      <div class="pro-benefit">
+        <div class="pro-benefit-ico" style="background:rgba(0,229,255,0.1);">🔔</div>
+        <div class="pro-benefit-info">
+          <div class="pro-benefit-name">Aviso antes de que se llene</div>
+          <div class="pro-benefit-desc">Que te llegue una notificación al celular cuando un lugar se está llenando. Es trabajo nuestro, no depende de nadie más.</div>
+        </div>
+        <div class="pro-benefit-tag tag-work">Lo estamos haciendo</div>
+      </div>
+
+    </div>
+
+    <div class="pro-honest">
+      <b>Por qué todavía no cobramos.</b>
+      Casi todos estos beneficios dependen de acuerdos con los boliches y bares,
+      y esos acuerdos todavía no están cerrados. Preferimos no cobrarte por algo
+      que hoy no podríamos cumplir en la puerta del local.
+    </div>
+
+    <div class="pro-benefits">
       <!-- WALLET BENEFIT -->
       <div class="wh-benefit-card" onclick="openWallet()">
         <div class="wh-benefit-top">
           <div class="wh-benefit-top-g"></div>
-          <div style="font-size:11px;font-weight:700;color:rgba(0,230,120,0.7);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;">💚 Billetera virtual</div>
+          <div style="font-size:11px;font-weight:700;color:rgba(0,230,120,0.7);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1;">💚 Billetera virtual · DEMO</div>
           <div class="wh-benefit-balance" id="wh-benefit-bal">AR$ 12.450</div>
-          <div class="wh-benefit-lbl">Saldo disponible</div>
+          <div class="wh-benefit-lbl">Saldo de ejemplo · no es dinero real</div>
           <div class="wh-benefit-actions-row">
             <div class="wh-benefit-action"><div class="wh-benefit-action-ico">⬇️</div><div class="wh-benefit-action-lbl">Depositar</div></div>
             <div class="wh-benefit-action"><div class="wh-benefit-action-ico">↗️</div><div class="wh-benefit-action-lbl">Transferir</div></div>
@@ -459,13 +446,12 @@
     </div>
 
     <!-- CTA -->
-    <div class="pro-cta-wrap">
-      <button class="pro-cta-btn" onclick="activatePro()">⭐ Activar SALGO Pro</button>
+    <!-- El botón de contratar aparece solo cuando el cobro esté encendido
+         (PRO_COBRO_ACTIVO en el servidor). Hasta entonces, la única acción de
+         esta pantalla es anotarse en la lista de espera, arriba. -->
+    <div class="pro-cta-wrap" id="pro-cta-wrap" hidden>
+      <button class="pro-cta-btn" data-action="suscribirse">⭐ Activar SALGO Pro</button>
       <div class="pro-cta-note">Cancelás cuando quieras · Sin permanencia</div>
-      <div class="pro-cc-row" onclick="openCard()" style="cursor:pointer;" title="Ver tarjeta">
-        <div class="pro-cc-badge" style="background:linear-gradient(135deg,#1a1f71,#2b3ab8);color:#fff;border:none;">VISA</div>
-      </div>
-      <div style="text-align:center;margin-top:6px;font-size:11px;color:rgba(10,10,20,0.35);cursor:pointer;" onclick="openCard()">💳 Ver tarjeta SALGO →</div>
     </div>
 
   </div>

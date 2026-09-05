@@ -50,32 +50,45 @@ cuando el uso crezca.
 
 ---
 
-## 💳 Etapa 2 — Cobrar
+## 🔨 Etapa 2 — Cobrar *(construida, esperando a los locales)*
 
-La suscripción de AR$ 1.500 y los descuentos en los locales.
+La maquinaria de cobro está lista y probada. **No está encendida**, y esa es la
+decisión importante de esta etapa.
 
-**Antes de escribir código, hay que resolver esto:**
+**Qué quedó hecho:**
 
-- **Hablar con un contador.** Cobrar una suscripción es una cosa; guardar plata
-  de los usuarios en una billetera es otra muy distinta, con obligaciones
-  legales concretas. Conviene arrancar solo por la suscripción.
-- **Redactar términos y condiciones y política de privacidad.** No es opcional:
-  Apple y Google no aprueban apps sin eso, y además se maneja la ubicación de
-  las personas, que es un dato sensible.
-- **Cerrar acuerdos con los locales.** Un descuento que el local no reconoce en
-  la puerta quema la credibilidad de la app entera. Esto es trabajo comercial,
-  no técnico, y conviene empezarlo ya — puede avanzar en paralelo con la
-  Etapa 1.
+- **Lista de espera funcionando.** La pantalla Pro junta el email de quien
+  quiere Pro y qué plan elegiría. Eso da algo concreto para mostrarle a los
+  boliches: *"tengo 200 personas dispuestas a pagar por un descuento tuyo"*.
+- **Suscripción por débito automático** con Mercado Pago (AR$ 1.500/mes),
+  detrás de una función del servidor. El Access Token nunca toca el navegador.
+- **Aviso de pagos verificado.** Cuando Mercado Pago avisa que alguien pagó, se
+  comprueba la firma del mensaje y además **se le vuelve a preguntar a Mercado
+  Pago** cuál es el estado real, en vez de creerle al aviso.
+- **Nadie puede autoasignarse Pro.** La tabla de suscripciones no acepta
+  escrituras desde la app: ni una. Solo el servidor escribe ahí, y solo después
+  de que el pago está confirmado. Hay 20 verificaciones automáticas de esto.
+- **Un interruptor** (`PRO_COBRO_ACTIVO`) que enciende el cobro cuando quieras,
+  del lado del servidor. Ver [MERCADOPAGO.md](MERCADOPAGO.md).
 
-**Con qué:** **Mercado Pago**, que es lo que la gente usa en Argentina y lo que
-mejor resuelve los pagos recurrentes.
+**Por qué no está encendido:** de los beneficios que promete Pro, casi todos
+dependen de acuerdos con los locales que todavía no existen. Si alguien paga
+AR$ 1.500 y en la puerta del boliche el descuento no aparece, el problema no es
+devolverle la plata — es que esa persona no vuelve ni recomienda la app.
 
-**Recomendación:** dejar la billetera como demo por ahora. La suscripción sola
-ya da el ingreso, y sin la complejidad legal de custodiar dinero de terceros.
+Mientras tanto la pantalla es honesta: dice qué falta para cada beneficio y no
+pide ninguna tarjeta.
 
-⏱️ **2 a 3 semanas** de programación (más lo legal y comercial, en paralelo)
-💰 comisión de Mercado Pago (~6% por transacción) + honorarios del contador y
-del abogado.
+**Lo que falta, y no es programación:**
+
+1. **Cerrar el primer acuerdo con un local.** Con uno solo alcanza para
+   encender, si la pantalla dice cuál es.
+2. **Hablar con un contador**: bajo qué figura cobrás y cómo facturás.
+3. **Términos y condiciones + política de privacidad.** No es opcional: Apple y
+   Google no aprueban apps sin eso, y la app maneja ubicación.
+
+⏱️ **Encender: 20 minutos** (credenciales + interruptor)
+💰 comisión de Mercado Pago (~6%) + contador y abogado
 
 ---
 
@@ -111,7 +124,7 @@ programarla de nuevo.
 |---|---|---|---|
 | ✅ 0 — Base técnica | App instalable con datos reales | hecho | $0 |
 | ✅ 1 — Servidor | Chat, "voy" y afluencia compartidos de verdad | hecho | $0 → $25/mes |
-| 💳 2 — Pagos | Ingresos por suscripción | 2–3 sem | ~6% + honorarios |
+| 🔨 2 — Pagos | Ingresos por suscripción | construido, falta encender | ~6% + honorarios |
 | 📱 3 — Tiendas | Visibilidad en App Store y Play | 1–2 sem | USD 99/año + 25 |
 
 ---
