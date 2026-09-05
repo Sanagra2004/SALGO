@@ -18,6 +18,10 @@
 // `service_role`: esa saltea todas las reglas de acceso. Vive solo en el panel
 // de Supabase.
 
+// OJO: va la URL BASE del proyecto, sin /rest/v1/ ni ninguna otra ruta al
+// final. El cliente de Supabase arma él mismo /rest/v1/, /auth/v1/,
+// /realtime/v1/, etc. Si se le agrega un sufijo acá, esas rutas quedan mal
+// formadas (.../rest/v1//auth/v1/signup) y nada funciona.
 export const SUPABASE_URL = 'https://xpsybuxkfpslnbobfeec.supabase.co';
 export const SUPABASE_ANON_KEY = 'sb_publishable_EFlOn9XqvwU5oJaqQkuE-w_gcm9EMBF';
 
