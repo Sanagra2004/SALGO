@@ -83,12 +83,15 @@ function renderCityList() {
     // Marcamos qué ciudades tienen lugares de verdad: es información honesta
     // y le muestra al equipo dónde falta cargar contenido.
     const cargada = citiesWithPlaces.includes(c.name);
+    // Usa las clases .city-item-* que ya tienen estilos en screens.css. Antes
+    // el markup usaba nombres (.city-row, .city-flag…) que no existían en
+    // ningún CSS, y la fila salía desarmada: bandera, nombre y país apilados.
     return `
-      <div class="city-row ${activa ? 'active' : ''}" data-city="${escapeHtml(c.name)}">
-        <div class="city-flag">${c.flag}</div>
-        <div class="city-info">
-          <div class="city-name">${escapeHtml(c.name)}</div>
-          <div class="city-country">${escapeHtml(c.country)}</div>
+      <div class="city-item ${activa ? 'selected' : ''}" data-city="${escapeHtml(c.name)}">
+        <div class="city-item-flag">${c.flag}</div>
+        <div class="city-item-info">
+          <div class="city-item-name">${escapeHtml(c.name)}</div>
+          <div class="city-item-country">${escapeHtml(c.country)}</div>
         </div>
         <div class="city-status ${cargada ? 'ok' : 'soon'}">${cargada ? 'Disponible' : 'Próximamente'}</div>
       </div>`;

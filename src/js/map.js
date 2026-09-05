@@ -89,26 +89,51 @@ export function ensureMap(containerId, { zoom = 14, interactive = true } = {}) {
 }
 
 /** Dibuja los lugares y el punto del usuario, y encuadra todo. */
-export function renderPlaces(containerId, places, { onSelect, fit = true, compact = false } = {}) {
-  const entry = ensureMap(containerId, compact ? { zoom: 13, interactive: false } : {});
+/**
+ * `compact`     puntos chicos en vez de burbujas con nombre. Con 30 lugares en
+ *               pantalla las burbujas se pisaban y no se leía ninguna; el
+ *               nombre aparece como etiqueta al acercar el zoom o al tocar.
+ * `interactive` se puede mover y hacer zoom. Por defecto sí, salvo en el
+ *               mini-mapa del home que es solo una vista previa.
+ */
+export function renderPlaces(containerId, places,
+  { onSelect, fit = true, compact = false, interactive = !compact } = {}) {
+  const entry = ensureMap(containerId, { zoom: compact ? 13 : 14, interactive });
   if (!entry) return;
   const { map, markers } = entry;
 
   markers.clearLayers();
   const points = [];
+  const labeled = [];
 
   places
     .filter((p) => p.lat != null && p.lng != null)
     .forEach((p) => {
       const marker = L.marker([p.lat, p.lng], { icon: compact ? dotIcon(p) : placeIcon(p) });
       marker.on('click', () => onSelect && onSelect(p.id));
-      marker.bindTooltip(
-        `${escapeHtml(p.name)} · ${Number(p.crowd) || 0}% lleno`,
-        { direction: 'top', offset: [0, -18] }
-      );
+      const label = `${escapeHtml(p.name)} · ${Number(p.crowd) || 0}% lleno`;
+      marker.bindTooltip(label, { direction: 'top', offset: [0, -18] });
+      labeled.push({ marker, label });
       markers.addLayer(marker);
       points.push([p.lat, p.lng]);
     });
+
+  // Con zoom cercano (≥15) hay lugar para mostrar los nombres fijos; con zoom
+  // lejano se pisarían, así que solo aparecen al tocar o pasar por encima.
+  if (interactive && compact) {
+    const refreshLabels = () => {
+      const permanent = map.getZoom() >= 15;
+      labeled.forEach(({ marker, label }) => {
+        marker.unbindTooltip();
+        marker.bindTooltip(label, { direction: 'top', offset: [0, -18], permanent });
+      });
+    };
+    // Solo sacamos NUESTRO listener anterior. `map.off('zoomend')` sin función
+    // borraría también los internos de Leaflet (el control de zoom, entre otros).
+    if (entry.onZoom) map.off('zoomend', entry.onZoom);
+    entry.onZoom = refreshLabels;
+    map.on('zoomend', refreshLabels);
+  }
 
   const pos = getPosition();
   if (pos.lat != null) {

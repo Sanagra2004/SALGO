@@ -46,6 +46,7 @@ export function showScreen(name) {
     }
   });
   currentScreen = name;
+  syncNavActive(name);
   onEnterScreen(name);
 }
 
@@ -59,18 +60,58 @@ function onEnterScreen(name) {
   if (name === 'home') places.renderHomeMap();
 }
 
-export function goNav(name, el) {
-  document.querySelectorAll('.ni').forEach((n) => {
-    n.classList.remove('active');
-    n.querySelector('.ni-dot')?.remove();
-  });
-  if (el) {
-    el.classList.add('active');
-    const dot = document.createElement('div');
-    dot.className = 'ni-dot';
-    el.appendChild(dot);
-  }
+export function goNav(name) {
   showScreen(name);
+}
+
+// ── Barra de navegación única ─────────────────────────────────────────
+// El prototipo tenía 8 barras distintas, una por pantalla, con 3, 4 o 5
+// pestañas según dónde estuvieras. Acá se genera UNA sola y se inyecta en
+// todas las pantallas, así siempre se ven las mismas opciones en el mismo
+// orden. Billetera y Alertas se llegan desde Perfil y desde la campana del
+// inicio.
+const ICON = {
+  home: '<path d="M3 11L11 3l8 8"/><path d="M5 9v9h4v-5h4v5h4V9"/>',
+  offers: '<path d="M11 2.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L11 15.9l-5.2 2.7 1-5.8L2.5 8.7l5.9-.9z"/>',
+  ai: '<rect x="4" y="4" width="14" height="14" rx="4"/><path d="M8 11h6M11 8v6"/>',
+  friends: '<circle cx="8" cy="8" r="3"/><path d="M2.5 18c0-3 2.5-5.5 5.5-5.5S13.5 15 13.5 18"/><circle cx="15.5" cy="8.5" r="2.4"/><path d="M15.5 13.5c2.2 0 4 1.8 4 4"/>',
+  profile: '<circle cx="11" cy="8" r="3.5"/><path d="M4 19c0-3.9 3.1-7 7-7s7 3.1 7 7"/>',
+};
+const NAV_ITEMS = [
+  ['home', 'Inicio'], ['offers', 'Ofertas'], ['ai', 'SALGO IA'],
+  ['friends', 'Amigos'], ['profile', 'Perfil'],
+];
+// Qué pestaña se marca en pantallas que no están en la barra.
+const TAB_OF = {
+  explore: 'home', notifs: 'home', detail: 'home',
+  wallet: 'profile', pro: 'profile', card: 'profile',
+};
+
+function renderNavbars() {
+  const html = NAV_ITEMS.map(([key, label]) => `
+    <div class="ni" data-nav="${key}">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor"
+           stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICON[key]}</svg>
+      <span class="ni-lbl">${label}</span>
+    </div>`).join('');
+  document.querySelectorAll('.navbar').forEach((nav) => {
+    nav.innerHTML = html;
+    nav.removeAttribute('style');
+  });
+}
+
+function syncNavActive(screen) {
+  const tab = TAB_OF[screen] || screen;
+  document.querySelectorAll('.ni').forEach((n) => {
+    const on = n.dataset.nav === tab;
+    n.classList.toggle('active', on);
+    n.querySelector('.ni-dot')?.remove();
+    if (on) {
+      const dot = document.createElement('div');
+      dot.className = 'ni-dot';
+      n.appendChild(dot);
+    }
+  });
 }
 
 export function goBack() {
@@ -86,7 +127,7 @@ function updateClock() {
 
 function bindNav() {
   document.querySelectorAll('[data-nav]').forEach((el) => {
-    el.addEventListener('click', () => goNav(el.dataset.nav, el.classList.contains('ni') ? el : null));
+    el.addEventListener('click', () => goNav(el.dataset.nav));
   });
   document.querySelectorAll('[data-back]').forEach((el) => {
     el.addEventListener('click', goBack);
@@ -190,6 +231,8 @@ async function init() {
     console.warn('[salgo] no pude iniciar sesión:', err);
   }
 
+  renderNavbars();   // antes de bindNav: los ítems tienen que existir para engancharlos
+  syncNavActive('home');
   bindNav();
   places.bindListEvents();
   cities.bindCityEvents();
@@ -215,7 +258,11 @@ async function init() {
   setTimeout(async () => {
     await requestLocation(cities.getCity());
     await places.reload();
-    if (isPrecise()) showToast('📍 Listo, ordenado por lo que tenés más cerca');
+    // Si la persona todavía está escribiendo su nombre, el aviso le tapaba
+    // el texto del modal. Se lo ahorramos.
+    if (isPrecise() && !$('name-modal')?.classList.contains('show')) {
+      showToast('📍 Listo, ordenado por lo que tenés más cerca');
+    }
   }, 1200);
 
   if (!profile.getUserName()) setTimeout(profile.askName, 2000);

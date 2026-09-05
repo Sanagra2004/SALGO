@@ -90,7 +90,7 @@ export function renderOfertas() {
   const heroColor = heroPlace.color1 || '#ff2d55';
 
   const heroHtml = `
-    <div class="oferta-hero" onclick="goNavExtended('detail_from_oferta',null,${heroPlace.id||1})">
+    <div class="oferta-hero" data-place="${heroPlace.id || ''}">
       <div class="oferta-hero-bg" style="background:linear-gradient(135deg,${heroColor}cc,#1a0020);">
         <div class="oferta-hero-gradient"></div>
         <div class="oferta-hero-tag">⭐ Mejor oferta ${hoy}</div>
@@ -201,7 +201,12 @@ export function renderStoryContent() {
   if (!s || !s.crowd) { closeStory(); return; }
   const slide = s.slides[0];
   const c = s.crowd >= 80 ? '#ff3b30' : s.crowd >= 50 ? '#ff9f0a' : '#34c759';
-  document.getElementById('story-bg').style.background = `linear-gradient(160deg,${s.color1}dd,${s.color2}dd,#000)`;
+  // Fondo SÓLIDO: antes los colores llevaban alpha ("dd") y el modal no tenía
+  // fondo propio, así que el inicio se veía a través de la story.
+  document.getElementById('story-bg').style.background = `linear-gradient(160deg,${s.color1},${s.color2} 55%,#000)`;
+  // El ícono del header nunca se actualizaba: mostraba siempre el 🌊 del HTML
+  // aunque la story fuera de otro lugar.
+  (function(){var _e=document.getElementById('story-av-ico');if(_e)_e.textContent = s.icon})();
   (function(){var _e=document.getElementById('story-name');if(_e)_e.textContent = s.name})();
   (function(){var _e=document.getElementById('story-status');if(_e)_e.textContent = s.open ? '🟢 Abierto ahora' : '🕐 Abre esta noche'})();
   (function(){var _e=document.getElementById('story-main-text');if(_e)_e.textContent = slide.text})();
@@ -413,6 +418,18 @@ export function renderDayStrip() {
     const chip = ev.target.closest('[data-dia]');
     if (chip) setOfertaDia(Number(chip.dataset.dia), chip);
   };
+  // La tira es scrolleable: si hoy es sábado o domingo, el chip activo quedaba
+  // cortado fuera de la pantalla. Lo centramos moviendo SOLO la tira.
+  //
+  // Ojo: no usar scrollIntoView acá. Ese método scrollea todos los ancestros
+  // (incluido .app, que aunque tenga overflow:hidden se puede scrollear por
+  // código) y, como la pantalla todavía está entrando con una transición,
+  // corría el contenedor entero fuera de la vista y todo quedaba en blanco.
+  const activo = strip.querySelector('.day-chip.active');
+  if (activo) {
+    strip.scrollLeft = Math.max(0,
+      activo.offsetLeft - (strip.clientWidth - activo.offsetWidth) / 2);
+  }
 }
 
 /** Delegación de eventos de esta pantalla. */

@@ -4,7 +4,7 @@
 // aunque no haya señal. Lo segundo importa más de lo que parece: adentro de
 // un boliche la conexión es mala, y ahí es justo cuando la gente la usa.
 
-const VERSION = 'salgo-v2';
+const VERSION = 'salgo-v3';
 const APP_SHELL = [
   './',
   './index.html',

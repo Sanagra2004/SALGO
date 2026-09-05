@@ -27,6 +27,13 @@ npm install playwright   # una sola vez
 ./tests/run.sh
 ```
 
+Las pruebas corren la app en **modo local** (sin servidor): `run.sh` vacía las
+claves de `src/js/config.js` mientras dura la corrida y las restaura al salir,
+aunque algo falle. Así el resultado no depende de la red ni del estado del
+proyecto de Supabase. Si corrés un archivo suelto con `node tests/01-app.mjs`
+en vez de usar `run.sh`, hacelo con la config vacía o vas a ver la pantalla
+"No pude conectarme" en lugar de los lugares.
+
 | Archivo | Qué prueba |
 |---|---|
 | `01-app.mjs` | Navegación, detalle, "voy", XSS del chat, filtro de ciudad, IA |

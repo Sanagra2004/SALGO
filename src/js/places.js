@@ -150,10 +150,47 @@ function placeCard(p) {
   </div>`;
 }
 
+// ---------- explorar ----------
+
+let expChip = 'Todo';
+
+/** Filtro de la pantalla Explorar (los chips antes no hacían nada). */
+export function setExpChip(el, cat) {
+  expChip = cat;
+  document.querySelectorAll('#chips-explore .chip').forEach((c) => { c.className = 'chip off'; });
+  if (el) el.className = 'chip on';
+  renderExploreList(allPlaces);
+}
+
+/**
+ * Destacado de la noche: el lugar abierto con más gente. Reemplaza el texto
+ * fijo del prototipo, que hablaba de un lugar que no existía.
+ */
+function renderFeatured(places) {
+  const box = $('exp-featured');
+  if (!box) return;
+  const top = places
+    .filter((p) => p.open)
+    .sort((a, b) => (Number(b.crowd) || 0) - (Number(a.crowd) || 0))[0];
+  if (!top) { box.hidden = true; return; }
+  box.hidden = false;
+  box.dataset.place = top.id;
+  setText('exp-feat-name', top.name);
+  setText('exp-feat-sub', `${top.type} · ${top.horario} · ${top.dist}`);
+  setText('exp-feat-price', top.entrada === 'Sin entrada' ? 'Sin entrada' : 'Entrada ' + top.entrada);
+}
+
 export function renderExploreList(places) {
   const el = $('exp-list');
   if (!el) return;
-  if (!places.length) { el.innerHTML = emptyState(getCity()); return; }
+  renderFeatured(places);
+  if (expChip !== 'Todo') places = places.filter((p) => (p.cat || []).includes(expChip));
+  if (!places.length) {
+    el.innerHTML = allPlaces.length
+      ? '<div class="list-empty">No hay lugares de este tipo por ahora</div>'
+      : emptyState(getCity());
+    return;
+  }
   el.innerHTML = places.map((p) => `
     <div class="exp-row" data-place="${p.id}">
       <div class="exp-ico" style="background:${escapeHtml(p.color1)}22;">${escapeHtml(p.icon)}</div>
@@ -214,9 +251,13 @@ export function renderHomeMap() {
 
 export function renderFullMap() {
   setText('fullmap-city', getCity());
+  // Puntos compactos: con 30 burbujas con nombre no se leía ninguna. Los
+  // nombres aparecen al acercar el zoom o al tocar un punto.
   salgoMap.renderPlaces('fullmap-bg', allPlaces, {
     onSelect: (id) => { closeFullMap(); setTimeout(() => openDetail(id), 250); },
     fit: true,
+    compact: true,
+    interactive: true,
   });
   const items = $('fullmap-items');
   if (!items) return;
@@ -380,8 +421,10 @@ export function sharePlace() {
 /** Delegación de eventos: una sola escucha por contenedor en vez de onclick por tarjeta. */
 export function bindListEvents() {
   document.addEventListener('click', (ev) => {
+    const chip = ev.target.closest('[data-expchip]');
+    if (chip) { setExpChip(chip, chip.dataset.expchip); return; }
     const card = ev.target.closest('[data-place]');
-    if (card) { openDetail(card.dataset.place); return; }
+    if (card && card.dataset.place) { openDetail(card.dataset.place); return; }
     if (ev.target.closest('[data-action="volver-mdp"]')) {
       import('./cities.js').then(({ selectCity }) => selectCity('Mar del Plata'));
       return;

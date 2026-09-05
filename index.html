@@ -44,7 +44,10 @@
       </div>
       <span class="logo-txt">SAL<span>GO</span></span>
     </div>
-    <div class="loc-pill" onclick="openCityModal()"><div class="loc-dot"></div><span class="city-display">Mar del Plata</span> ▾</div>
+    <div class="hdr-right">
+      <div class="hdr-bell" data-nav="notifs" title="Alertas">🔔<span class="hdr-bell-dot"></span></div>
+      <div class="loc-pill" onclick="openCityModal()"><div class="loc-dot"></div><span class="city-display">Mar del Plata</span> ▾</div>
+    </div>
   </div>
   <div class="content">
     <div class="search-bar">
@@ -109,25 +112,27 @@
     <div class="status-icons">📶 🔋</div>
   </div>
   <div class="hdr">
-    <div style="font-size:18px;font-weight:700;letter-spacing:-0.5px;">Ofertas <span style="color:var(--txt3);font-weight:400;font-size:14px;">· Descuentos de hoy</span></div>
+    <div style="font-size:18px;font-weight:700;letter-spacing:-0.5px;">Explorar <span style="color:var(--txt3);font-weight:400;font-size:14px;">· Todos los lugares</span></div>
     <div class="loc-pill" onclick="openCityModal()"><div class="loc-dot"></div><span class="city-display">Mar del Plata</span> ▾</div>
   </div>
   <div class="content">
-    <div class="exp-featured" onclick="openDetail(4)">
+    <!-- Destacado de la noche: lo completa places.js con el lugar más lleno
+         que esté abierto. Antes era un texto fijo de un lugar que no existe. -->
+    <div class="exp-featured" id="exp-featured" data-place="" hidden>
       <svg class="exp-pat" viewBox="0 0 340 140" fill="none"><circle cx="260" cy="40" r="100" fill="#b44dff"/><circle cx="60" cy="130" r="80" fill="#ff2d78"/></svg>
-      <div class="exp-feat-price">Desde $3.500</div>
+      <div class="exp-feat-price" id="exp-feat-price"></div>
       <div>
         <div class="exp-feat-tag">DESTACADO ESTA NOCHE</div>
-        <div class="exp-feat-name">Warehouse Night</div>
-        <div class="exp-feat-sub">La Fábrica · 01:00–07:00 · 340m</div>
+        <div class="exp-feat-name" id="exp-feat-name"></div>
+        <div class="exp-feat-sub" id="exp-feat-sub"></div>
       </div>
     </div>
-    <div class="chips">
-      <div class="chip on">Todo</div>
-      <div class="chip off">Electrónica</div>
-      <div class="chip off">Cumbia</div>
-      <div class="chip off">Rock</div>
-      <div class="chip off">Bares</div>
+    <div class="chips" id="chips-explore">
+      <div class="chip on" data-expchip="Todo">Todo</div>
+      <div class="chip off" data-expchip="Techno">Electrónica</div>
+      <div class="chip off" data-expchip="Cumbia">Cumbia</div>
+      <div class="chip off" data-expchip="Rock">Rock</div>
+      <div class="chip off" data-expchip="Bar">Bares</div>
     </div>
     <div class="sec">Todos los lugares</div>
     <div class="exp-list" id="exp-list"></div>
@@ -181,6 +186,23 @@
       </div>
       <button class="pf-pro-btn" onclick="openPro()">Ver →</button>
     </div>
+
+    <!-- Billetera y Alertas salieron de la barra inferior (que ahora es la
+         misma en todas las pantallas); desde acá se llega igual. -->
+    <div class="pf-section">Accesos</div>
+    <div class="pf-links">
+      <div class="pf-link" onclick="openWallet()">
+        <div class="pf-link-ico" style="background:rgba(0,184,118,.12);">💳</div>
+        <div><div class="pf-link-name">Mi billetera SALGO</div><div class="pf-link-sub">Demo · todavía no mueve dinero real</div></div>
+        <div class="pf-link-arr">›</div>
+      </div>
+      <div class="pf-link" data-nav="notifs">
+        <div class="pf-link-ico" style="background:rgba(255,45,120,.1);">🔔</div>
+        <div><div class="pf-link-name">Alertas</div><div class="pf-link-sub">Afluencia, amigos y ofertas</div></div>
+        <div class="pf-link-arr">›</div>
+      </div>
+    </div>
+
     <div class="pf-section">Últimas salidas</div>
     <div class="pf-list">
       <div class="pf-item">
@@ -256,13 +278,13 @@
         <div class="pro-plan-badge plan-badge-popular">⭐ Popular</div>
         <div class="pro-plan-price">AR$ 1.800</div>
         <div class="pro-plan-period">/mes</div>
-        <div class="pro-plan-total">Total AR$ 5.400 × 3</div>
+        <div class="pro-plan-total">Total: AR$ 5.400</div>
       </div>
       <div class="pro-plan unselected" id="plan-12mes" onclick="selectPlan(12)">
         <div class="pro-plan-badge plan-badge-save">Ahorrás 25%</div>
         <div class="pro-plan-price">AR$ 1.500</div>
         <div class="pro-plan-period">/mes</div>
-        <div class="pro-plan-total">Total AR$ 18.000 × 12</div>
+        <div class="pro-plan-total">Total: AR$ 18.000</div>
       </div>
     </div>
 

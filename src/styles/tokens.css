@@ -15,6 +15,15 @@
   --amber: #f59e0b;
   --red: #ef4444;
   --blue: #3b82f6;
+
+  /* Alias que el CSS heredado del prototipo usa en decenas de lugares pero que
+     nunca habían sido definidos. Sin esto, todo lo que dependía de ellos
+     quedaba transparente: el botón "Listo" del selector de ciudad, el "+" de
+     Amigos, bordes de tarjetas, separadores... */
+  --accent: var(--v);
+  --pink: var(--v);
+  --sep: var(--border);
+  --txt4: rgba(10,10,20,0.28);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; background: #f2f2f7; color: var(--txt); font-family: 'DM Sans', sans-serif; }

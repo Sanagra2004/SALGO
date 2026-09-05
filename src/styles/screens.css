@@ -688,3 +688,91 @@
 .oferta-empty-sub { font-size: 13px; color: var(--txt3); }
 .oferta-count-lbl { font-size: 11px; font-weight: 600; color: var(--txt3); letter-spacing: .8px; text-transform: uppercase; padding: 0 20px 10px; flex-shrink: 0; }
 
+
+/* ══════════════════════════════════════════════════════════════════════
+   AJUSTES VISUALES — va al final a propósito: este archivo carga último y
+   así estas reglas ganan a las heredadas del prototipo que corrigen.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── El mapa se colaba sobre los modales ──────────────────────────────
+   Leaflet dibuja sus capas con z-index 400–700. Si el contenedor no crea su
+   propio contexto de apilamiento, esas capas "escapan" y quedan por encima del
+   selector de ciudad, de las stories y de la lista del mapa grande.
+   isolation:isolate encierra todo dentro del contenedor. */
+.map-box, .fullmap-map, .leaflet-container { isolation: isolate; z-index: 0; }
+.fullmap-header { z-index: 5; }
+.fullmap-list   { z-index: 4; }
+/* Los controles de zoom quedaban debajo del header del mapa grande. */
+.fullmap-map .leaflet-top { top: 104px; }
+
+/* Todos los overlays por encima de cualquier cosa de la app (y del mapa). */
+.modal-overlay { z-index: 1000; }
+.wh-modal, .resv-modal { z-index: 1100; }
+.fullmap-modal { z-index: 1150; }
+.city-modal    { z-index: 1200; }
+.story-modal   { z-index: 1300; background: #000; }
+.toast         { z-index: 2000; }
+
+/* ── Headers de Amigos, Alertas y Ofertas ─────────────────────────────
+   Usaban clases que no existían en ningún CSS: el título quedaba pegado al
+   borde y los botones apilados debajo. */
+.home-hdr, .ofertas-header { padding: 6px 16px 12px; flex-shrink: 0; }
+.logo-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.logo-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -.5px; color: var(--txt); }
+/* .loc-chip es el mismo componente que .loc-pill con otro nombre. */
+.loc-chip { display: flex; align-items: center; gap: 5px; background: rgba(255,45,120,0.08); border: 1px solid rgba(255,45,120,0.2); border-radius: 20px; padding: 5px 11px; font-size: 11px; font-weight: 600; color: #ff2d78; cursor: pointer; white-space: nowrap; }
+
+/* Campana de alertas en el header del inicio. */
+.hdr-right { display: flex; align-items: center; gap: 8px; }
+.hdr-bell { position: relative; width: 34px; height: 34px; border-radius: 12px; background: #fff; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,.06); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; }
+.hdr-bell-dot { position: absolute; top: 7px; right: 8px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); border: 1.5px solid #fff; }
+
+/* ── Badge DEMO y botón "volver" ──────────────────────────────────────
+   El badge estaba en posición absoluta y tapaba la hora; y el botón "<" a
+   52px del borde caía justo sobre el título del hero. */
+.demo-badge { position: relative; }
+.demo-badge + .status { top: 22px !important; }
+.wallet-hero, .card-hero { padding-top: 98px; }
+
+/* ── Detalle: el nombre del lugar era negro sobre un hero oscuro ──────── */
+.detail-name { font-family: 'Syne', sans-serif; color: #fff; text-shadow: 0 1px 10px rgba(0,0,0,.45); }
+.detail-addr { color: rgba(255,255,255,0.78); }
+
+/* ── Explorar: el hero destacado tenía texto oscuro sobre fondo oscuro ── */
+.exp-featured { background: linear-gradient(135deg, #1a0933, #2a0a4a 60%, #3d1060); }
+.exp-feat-name { font-family: 'Syne', sans-serif; color: #fff; }
+.exp-feat-price { color: #fff; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.15); }
+
+/* ── Pro: "Total AR$ 18.000 × 12" se partía en dos líneas ───────────── */
+.pro-plan-total { white-space: nowrap; font-size: 9px; letter-spacing: -.2px; }
+
+/* ── Selector de ciudad: el estado va a la derecha; fuentes coherentes ── */
+.city-item { justify-content: flex-start; }
+.city-item .city-status { margin-left: auto; }
+.city-item-info { min-width: 0; }
+.city-search input, .city-custom-inp, .city-custom-btn, .city-confirm-btn { font-family: inherit; }
+
+/* ── Accesos en el perfil (Billetera y Alertas ya no están en la barra) ─ */
+.pf-links { display: flex; flex-direction: column; gap: 8px; padding: 0 16px; }
+.pf-link { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--border); border-radius: 13px; padding: 12px 14px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+.pf-link:active { opacity: .7; }
+.pf-link-ico { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.pf-link-name { font-size: 13px; font-weight: 600; color: var(--txt); }
+.pf-link-sub { font-size: 11px; color: var(--txt3); margin-top: 1px; }
+.pf-link-arr { margin-left: auto; color: var(--txt3); font-size: 16px; }
+
+/* Barra de navegación única: los íconos usan currentColor para que el estado
+   activo se maneje solo con el color del ítem. */
+.ni { color: var(--txt3); }
+.ni.active { color: var(--accent); }
+.ni svg { display: block; }
+
+/* .exp-featured tiene display:flex, que le gana al `hidden` del navegador. */
+.exp-featured[hidden] { display: none; }
+/* Con el badge DEMO arriba, la barra de estado caía sobre la estrella del hero. */
+.pro-hero { padding-top: 48px; }
+
+/* Títulos de sección del inicio y de Amigos ("Mapa en vivo", "Cerca tuyo esta
+   noche", "Grupos activos"): la clase no tenía estilos y quedaban pegados al
+   borde izquierdo. */
+.sec-lbl { padding: 0 16px 10px; font-size: 17px; font-weight: 700; letter-spacing: -.3px; color: var(--txt); flex-shrink: 0; }
