@@ -1,17 +1,26 @@
 /* SALGO — tokens de diseño y reset.
-   Cambiá acá los colores y se propagan a toda la app. */
+   Cambiá acá los colores y se propagan a toda la app.
+
+   Identidad "Sunset Rave" (una de las 3 paletas que probamos en el lienzo
+   de diseño, elegida como la fija para lanzar): fondo negro total, tarjetas
+   oscuras y un degradé naranja→rosa→dorado como acento, pensado para que
+   se lea fuerte en un celular a la noche. */
 
 :root {
-  --v: #ff2d78;
-  --vl: #ff6ba0;
-  --bg: #f5f5f7;
-  --bg2: #ffffff;
-  --bg3: #ededf2;
-  --txt: #0a0a14;
-  --txt2: rgba(10,10,20,0.65);
-  --txt3: rgba(10,10,20,0.38);
-  --border: rgba(10,10,20,0.09);
-  --green: #00b876;
+  --v: #ff5e3a;              /* acento principal (naranja atardecer) */
+  --vl: #ff9d6b;
+  --v2: #ff2d78;             /* acento secundario (rosa), para degradés */
+  --v3: #ffb800;             /* acento terciario (dorado) */
+  --grad: linear-gradient(135deg, var(--v), var(--v2), var(--v3));
+
+  --bg: #040406;             /* fondo de pantalla */
+  --bg2: #15151f;            /* tarjetas y superficies */
+  --bg3: #1c1c2a;            /* superficies anidadas (inputs, chips) */
+  --txt: #ffffff;
+  --txt2: rgba(255,255,255,0.65);
+  --txt3: rgba(255,255,255,0.42);
+  --border: rgba(255,255,255,0.09);
+  --green: #22c55e;
   --amber: #f59e0b;
   --red: #ef4444;
   --blue: #3b82f6;
@@ -23,8 +32,7 @@
   --accent: var(--v);
   --pink: var(--v);
   --sep: var(--border);
-  --txt4: rgba(10,10,20,0.28);
+  --txt4: rgba(255,255,255,0.3);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; background: #f2f2f7; color: var(--txt); font-family: 'DM Sans', sans-serif; }
-
+html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--txt); font-family: 'DM Sans', sans-serif; }
