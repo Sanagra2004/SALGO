@@ -6,6 +6,8 @@ import { withDistances, getPosition, isPrecise } from './geo.js';
 import * as salgoMap from './map.js';
 import { getCity } from './cities.js';
 
+// Respaldo para lugares viejos que no tengan `instagram` guardado en la base
+// (los que se cargan desde el panel ya lo traen en el propio dato).
 const INSTAGRAM_ACCOUNTS = {
   'Samsara Beach': 'samsarabeach.mdq', 'Luna Disco': 'lunadisco', 'Club Quba': 'clubquba.mdp',
   'La Bodeguita': 'labodeguitamardelplata', 'Antares Cervecería': 'antares_mdp',
@@ -316,7 +318,7 @@ export async function openDetail(id) {
   }
 
   const igWrap = $('place-ig-wrap');
-  const handle = INSTAGRAM_ACCOUNTS[p.name];
+  const handle = p.instagram || INSTAGRAM_ACCOUNTS[p.name];
   if (igWrap) {
     igWrap.innerHTML = handle ? `
       <a class="ig-btn" href="https://www.instagram.com/${encodeURIComponent(handle)}/" target="_blank" rel="noopener">

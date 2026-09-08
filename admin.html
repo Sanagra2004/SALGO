@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="src/styles/base.css">
 <link rel="stylesheet" href="src/styles/components.css">
 <link rel="stylesheet" href="src/styles/screens.css">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <style>
   html, body { overflow: auto; background: var(--bg); }
   .adm-wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 60px; }
@@ -28,7 +29,7 @@
     padding: 8px 14px; font-family: inherit; font-size: 13px; font-weight: 600;
     color: var(--txt2); cursor: pointer;
   }
-  .admin-tab.active { background: var(--txt); color: #fff; border-color: var(--txt); }
+  .admin-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
   .admin-pane { display: none; }
   .admin-section-lbl {
     font-size: 10px; font-weight: 700; color: var(--txt3);
@@ -53,6 +54,20 @@
   .admin-recent-badge.on { background: rgba(0,184,118,0.1); color: var(--green); }
   .admin-recent-badge.off { background: rgba(245,158,11,0.1); color: var(--amber); }
   .admin-place-geo { font-size: 11px; color: var(--txt3); margin-top: 3px; }
+  .admin-addr-row { display: flex; gap: 8px; align-items: stretch; }
+  .admin-addr-row .admin-form-inp { flex: 1; margin-bottom: 0; }
+  .admin-geo-btn {
+    flex-shrink: 0; padding: 0 16px; border-radius: 11px; border: none;
+    background: var(--grad); color: #fff; font-family: inherit; font-size: 13px;
+    font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+  .admin-geo-btn:disabled { opacity: 0.6; cursor: default; }
+  .admin-map-wrap { margin: 10px 0 14px; }
+  .admin-map-box {
+    height: 220px; border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--border); background: #0d1420;
+  }
+  .admin-map-hint { margin-top: 8px; }
   .admin-crowd-val { font-size: 11px; font-weight: 700; }
   .adm-tools { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
   .adm-tools button, .adm-tools label {
@@ -158,10 +173,24 @@
       <input class="admin-form-inp" id="adm-genre" placeholder="Techno / House">
 
       <label class="admin-form-lbl">Dirección</label>
-      <input class="admin-form-inp" id="adm-addr" placeholder="Av. Colón 1200, Mar del Plata">
+      <div class="admin-form-row admin-addr-row">
+        <input class="admin-form-inp" id="adm-addr" placeholder="Av. Colón 1200, Mar del Plata">
+        <button type="button" class="admin-geo-btn" data-action="buscar-direccion">📍 Ubicar</button>
+      </div>
+      <div class="admin-note" id="adm-geo-note" style="margin-bottom:10px;">
+        Escribí la dirección y tocá "Ubicar": la app busca el punto real en el
+        mapa. Después podés arrastrar el pin para ajustarlo si no cayó exacto.
+      </div>
 
       <!-- La distancia ya no se carga a mano: la calcula la app contra la
-           ubicación real del usuario. Lo que sí hace falta son las coordenadas. -->
+           ubicación real del usuario. Lo que sí hace falta son las coordenadas,
+           que ahora salen de buscar la dirección (o de arrastrar el pin) en
+           vez de tener que ir a buscarlas a mano a otra página. -->
+      <div class="admin-map-wrap" id="adm-map-wrap" hidden>
+        <div class="admin-map-box" id="adm-map"></div>
+        <div class="admin-note admin-map-hint">📌 Arrastrá el pin o tocá el mapa para corregir la ubicación exacta.</div>
+      </div>
+
       <div class="admin-form-row">
         <div>
           <label class="admin-form-lbl">Latitud *</label>
@@ -174,9 +203,13 @@
       </div>
       <div class="admin-note" style="margin-bottom:12px;">
         📍 Sin coordenadas el lugar no aparece en el mapa ni se le puede calcular
-        la distancia. Para conseguirlas: abrí
-        <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">openstreetmap.org</a>,
-        buscá la dirección, hacé clic derecho sobre el punto y elegí "Mostrar dirección".
+        la distancia.
+      </div>
+
+      <label class="admin-form-lbl">Instagram (usuario, sin @)</label>
+      <input class="admin-form-inp" id="adm-ig" placeholder="miboliche.mdp">
+      <div class="admin-note" style="margin-bottom:12px;">
+        📸 Se muestra como botón "Ver en Instagram" en el detalle del lugar. Dejalo vacío si el local todavía no tiene cuenta.
       </div>
 
       <div class="admin-form-row">
@@ -252,6 +285,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="vendor/leaflet/leaflet.js"></script>
 <script src="vendor/supabase/supabase.js"></script>
 <script type="module">
   import { initAdmin } from './src/js/admin.js';

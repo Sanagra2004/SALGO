@@ -21,9 +21,112 @@
 import { store, storeMode } from './store.js';
 import { initAuth, signIn, signOut, isSignedIn, getSession } from './auth.js';
 import { escapeHtml, showToast, $, setHtml } from './ui.js';
+import { CITY_CENTERS } from './geo.js';
 
 let editingId = null;
 const crowdDrafts = {};
+
+// ---------- ubicación real: buscar dirección + mapa con pin arrastrable ----------
+//
+// Antes había que ir a openstreetmap.org, buscar la dirección a mano, clic
+// derecho, "mostrar dirección" y copiar los números acá. Ahora se escribe la
+// dirección, se busca contra Nominatim (el buscador de OpenStreetMap, gratis
+// y sin API key) y el pin cae solo en el mapa. Si no cayó exacto, se arrastra.
+
+let pickerMap = null;
+let pickerMarker = null;
+
+function updateLatLngInputs(lat, lng) {
+  const latEl = $('adm-lat');
+  const lngEl = $('adm-lng');
+  if (latEl) latEl.value = lat.toFixed(6);
+  if (lngEl) lngEl.value = lng.toFixed(6);
+}
+
+function ensurePickerMap(lat, lng) {
+  const el = $('adm-map');
+  if (!el || typeof L === 'undefined') return null;
+
+  if (!pickerMap) {
+    pickerMap = L.map(el, { zoomControl: true, scrollWheelZoom: false }).setView([lat, lng], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(pickerMap);
+    pickerMarker = L.marker([lat, lng], { draggable: true }).addTo(pickerMap);
+    pickerMarker.on('dragend', () => {
+      const { lat: la, lng: ln } = pickerMarker.getLatLng();
+      updateLatLngInputs(la, ln);
+    });
+    // Tocar el mapa también mueve el pin: es más fácil que arrastrar de un
+    // punto milimétrico, sobre todo en un celular.
+    pickerMap.on('click', (ev) => {
+      pickerMarker.setLatLng(ev.latlng);
+      updateLatLngInputs(ev.latlng.lat, ev.latlng.lng);
+    });
+  } else {
+    pickerMap.setView([lat, lng], 16);
+    pickerMarker.setLatLng([lat, lng]);
+  }
+  return pickerMap;
+}
+
+/** Muestra el mapa (estaba oculto) y centra el pin en (lat, lng). */
+function showMapAt(lat, lng) {
+  const wrap = $('adm-map-wrap');
+  if (wrap) wrap.hidden = false;
+  ensurePickerMap(lat, lng);
+  // Leaflet calcula mal el tamaño si el contenedor estaba con display:none
+  // al crearse — el mapa queda achicado en la esquina hasta que se redimensiona.
+  setTimeout(() => pickerMap?.invalidateSize(), 60);
+}
+
+/** Busca la dirección escrita contra Nominatim y ubica el pin ahí. */
+export async function buscarDireccion() {
+  const addr = val('adm-addr');
+  const city = val('adm-city') || 'Mar del Plata';
+  if (!addr) { showToast('❌ Escribí primero la dirección'); return; }
+
+  const btn = document.querySelector('[data-action="buscar-direccion"]');
+  const before = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = 'Buscando…'; }
+
+  // Sin timeout, una red lenta o caída deja el botón en "Buscando…" para
+  // siempre: la persona no sabe si sigue esperando o si ya falló.
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 8000);
+
+  try {
+    const q = encodeURIComponent(`${addr}, ${city}`);
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${q}`,
+      { headers: { Accept: 'application/json' }, signal: ctrl.signal }
+    );
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const results = await res.json();
+
+    if (results.length) {
+      const { lat, lon } = results[0];
+      updateLatLngInputs(Number(lat), Number(lon));
+      showMapAt(Number(lat), Number(lon));
+      showToast('📍 Encontrado. Si no cayó exacto, arrastrá el pin.');
+    } else {
+      const center = CITY_CENTERS[city] || CITY_CENTERS['Mar del Plata'];
+      updateLatLngInputs(center.lat, center.lng);
+      showMapAt(center.lat, center.lng);
+      showToast('⚠️ No encontré esa dirección. Ubicá el pin a mano en el mapa.');
+    }
+  } catch (err) {
+    console.warn('[admin] no pude geocodificar', err);
+    const center = CITY_CENTERS[city] || CITY_CENTERS['Mar del Plata'];
+    updateLatLngInputs(center.lat, center.lng);
+    showMapAt(center.lat, center.lng);
+    showToast('⚠️ No pude buscar la dirección (sin conexión). Ubicá el pin a mano.');
+  } finally {
+    clearTimeout(timer);
+    if (btn) { btn.disabled = false; btn.textContent = before || '📍 Ubicar'; }
+  }
+}
 
 const crowdColor = (c) => (c >= 80 ? '#ef4444' : c >= 50 ? '#f59e0b' : '#00b876');
 
@@ -149,9 +252,10 @@ export async function savePlace() {
       capacity: Number.isFinite(capacidad) && capacidad > 0 ? capacidad : 200,
       rating: Number((parseInt(val('adm-rat'), 10) / 10).toFixed(1)) || 4,
       open: val('adm-open') === 'true',
-      color1: val('adm-color') || '#ff2d78',
-      color2: '#b44dff',
+      color1: val('adm-color') || '#ff5e3a',
+      color2: '#ff2d78',
       cat: [type],
+      instagram: val('adm-ig').replace(/^@/, '') || null,
     });
   } catch (err) {
     showToast('❌ ' + err.message);
@@ -189,10 +293,14 @@ export async function editPlace(id) {
   set('adm-rat', Math.round(p.rating * 10));
   set('adm-open', String(p.open));
   set('adm-color', p.color1);
+  set('adm-ig', p.instagram || '');
   syncRanges();
   const title = $('adm-form-title');
   if (title) title.textContent = 'Editar ' + p.name;
   adminTab('nuevo', document.querySelector('[data-tab="nuevo"]'));
+  // Si ya tiene coordenadas, mostramos el pin de una para que se vea (y se
+  // pueda corregir) dónde quedó ubicado, sin tener que tocar "Ubicar" de nuevo.
+  if (p.lat != null && p.lng != null) showMapAt(p.lat, p.lng);
 }
 
 export async function deletePlace(id) {
@@ -211,7 +319,7 @@ export async function deletePlace(id) {
 
 export function resetForm() {
   editingId = null;
-  ['adm-name', 'adm-genre', 'adm-addr', 'adm-lat', 'adm-lng', 'adm-hrs', 'adm-ent', 'adm-cons']
+  ['adm-name', 'adm-genre', 'adm-addr', 'adm-lat', 'adm-lng', 'adm-hrs', 'adm-ent', 'adm-cons', 'adm-ig']
     .forEach((id) => { const el = $(id); if (el) el.value = ''; });
   const ico = $('adm-ico'); if (ico) ico.value = '📍';
   const cap = $('adm-cap'); if (cap) cap.value = 200;
@@ -220,6 +328,10 @@ export function resetForm() {
   syncRanges();
   const title = $('adm-form-title');
   if (title) title.textContent = 'Nuevo lugar';
+  // El mapa se vuelve a mostrar recién cuando se busca una dirección o se
+  // edita un lugar que ya tenía coordenadas.
+  const wrap = $('adm-map-wrap');
+  if (wrap) wrap.hidden = true;
 }
 
 function syncRanges() {
@@ -390,6 +502,7 @@ export async function initAdmin() {
     if (del) { deletePlace(Number(del.dataset.del)); return; }
     const sc = t.closest('[data-savecrowd]');
     if (sc) { saveCrowd(Number(sc.dataset.savecrowd)); return; }
+    if (t.closest('[data-action="buscar-direccion"]')) buscarDireccion();
     if (t.closest('[data-action="guardar"]')) savePlace();
     if (t.closest('[data-action="limpiar"]')) resetForm();
     if (t.closest('[data-action="restaurar"]')) resetToSeed();
@@ -401,6 +514,10 @@ export async function initAdmin() {
 
   $('adm-pass')?.addEventListener('keydown', (ev) => {
     if (ev.key === 'Enter') entrar();
+  });
+
+  $('adm-addr')?.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') { ev.preventDefault(); buscarDireccion(); }
   });
 
   document.addEventListener('input', (ev) => {

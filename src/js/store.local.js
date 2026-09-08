@@ -73,6 +73,7 @@ function normalize(place) {
   p.genre = p.genre || p.type;
   p.lat = Number.isFinite(Number(p.lat)) ? Number(p.lat) : null;
   p.lng = Number.isFinite(Number(p.lng)) ? Number(p.lng) : null;
+  p.instagram = p.instagram ? String(p.instagram).replace(/^@/, '').trim() || null : null;
   p.msgs = Array.isArray(p.msgs) ? p.msgs : [];
   delete p.ico; delete p.rat; delete p.ent; delete p.cons; delete p.hrs; delete p.cats;
   delete p.dist; // la distancia ahora se calcula contra la ubicación real del usuario
