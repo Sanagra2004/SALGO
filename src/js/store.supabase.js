@@ -308,6 +308,39 @@ export const supabaseStore = {
     }));
   },
 
+  async getEvents({ placeId, date } = {}) {
+    const db = getClient();
+    let query = db.from('events').select('*').eq('published', true).order('event_date');
+    if (placeId != null) query = query.eq('place_id', Number(placeId));
+    if (date) query = query.eq('event_date', date);
+    const { data, error } = await query;
+    if (error) throw new Error(traducirError(error));
+    return data;
+  },
+
+  async saveEvent(event) {
+    const db = getClient();
+    if (!db) throw new Error('Sin conexión con el servidor');
+    const row = {
+      place_id: Number(event.place_id),
+      event_date: event.event_date,
+      title: event.title,
+      description: event.description || null,
+      line_up: event.line_up || [],
+      entry_price: event.entry_price || 'Consultar',
+      table_price: event.table_price || null,
+      capacity: event.capacity ? Number(event.capacity) : null,
+      published: event.published !== false,
+    };
+    const query = event.id
+      ? db.from('events').update(row).eq('id', event.id)
+      : db.from('events').insert(row);
+    const { data, error } = await query.select().single();
+    if (error) throw new Error(traducirError(error));
+    emit('events', data);
+    return data;
+  },
+
   async createReservation(reservation) {
     const db = getClient();
     const uid = getUserId();

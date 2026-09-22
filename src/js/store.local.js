@@ -13,6 +13,7 @@ const KEY_PLACES = 'salgo_places';
 const KEY_GOING = 'salgo_going';
 const KEY_MSGS = 'salgo_msgs';
 const KEY_RESERVATIONS = 'salgo_reservations';
+const KEY_EVENTS = 'salgo_events';
 const KEY_SEEDED = 'salgo_seeded_v1';
 
 const SEED_URL = new URL('../data/places.mdp.json', import.meta.url);
@@ -198,6 +199,31 @@ export const localStore = {
 
   async getReservations() {
     return read(KEY_RESERVATIONS, []);
+  },
+
+  async getEvents({ placeId, date } = {}) {
+    return read(KEY_EVENTS, []).filter((event) =>
+      (placeId == null || Number(event.place_id) === Number(placeId)) &&
+      (!date || event.event_date === date) &&
+      event.published !== false
+    );
+  },
+
+  async saveEvent(event) {
+    const current = read(KEY_EVENTS, []);
+    const next = {
+      ...event,
+      id: event.id || `local-event-${Date.now()}`,
+      place_id: Number(event.place_id),
+      title: String(event.title || '').trim(),
+      line_up: Array.isArray(event.line_up) ? event.line_up : [],
+      published: event.published !== false,
+    };
+    const index = current.findIndex((item) => item.id === next.id);
+    if (index >= 0) current[index] = next; else current.push(next);
+    write(KEY_EVENTS, current);
+    emit('events', next);
+    return next;
   },
 
   async createReservation(reservation) {
