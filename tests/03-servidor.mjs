@@ -1,7 +1,8 @@
 import { chromium } from 'playwright';
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
-const CFG = new URL('../src/js/config.js', import.meta.url).pathname;
+const CFG = fileURLToPath(new URL('../src/js/config.js', import.meta.url));
 const original = fs.readFileSync(CFG, 'utf8');
 const ok = (l, c, x='') => console.log(`${c?'✓':'✗'} ${l}${x?' — '+x:''}`);
 
@@ -37,11 +38,10 @@ try {
 
   ok('NO explota con el servidor caído', errs.length === 0, errs.join(' | '));
 
-  const vacio = await page.locator('#places-list').textContent();
-  ok('sin conexion dice "no pude conectarme", NO "no llegamos a la ciudad"',
-    vacio.includes('No pude conectarme') && !vacio.includes('Todavia no llegamos')
-      && !vacio.includes('Todavía no llegamos'),
-    vacio.trim().split('\n')[0].slice(0, 50));
+  const catalogo = await page.locator('#places-list .pcard').count();
+  ok('sin conexion conserva el catálogo local',
+    catalogo === 30,
+    catalogo + ' lugares');
 
   // Segunda visita: ya hay copia guardada del catálogo.
   await page.evaluate(() => localStorage.setItem('salgo_cache_places',

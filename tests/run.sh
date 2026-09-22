@@ -29,7 +29,11 @@ sed -i "s|export const SUPABASE_URL = '.*';|export const SUPABASE_URL = '';|; \
 
 if ! curl -s -o /dev/null http://localhost:8000/index.html 2>/dev/null; then
   echo "▶ levantando el servidor en el puerto 8000…"
-  python3 -m http.server 8000 >/dev/null 2>&1 &
+  if command -v python3 >/dev/null 2>&1; then
+    python3 -m http.server 8000 >/dev/null 2>&1 &
+  else
+    node scripts/server.mjs >/dev/null 2>&1 &
+  fi
   SERVER=$!
   sleep 2
 fi

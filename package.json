@@ -5,9 +5,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "python3 -m http.server 8000",
-    "test": "./tests/run.sh",
-    "test:db": "./supabase/test.sh"
+    "start": "node scripts/server.mjs",
+    "test": "bash tests/run.sh",
+    "test:db": "bash supabase/test.sh"
   },
   "devDependencies": {
     "playwright": "^1.56.0"
