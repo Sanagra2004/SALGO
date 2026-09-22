@@ -13,6 +13,7 @@ import { getClient, getUserId } from './auth.js';
 import { nightOf } from './config.js';
 
 const CACHE_PLACES = 'salgo_cache_places';
+const SEED_URL = new URL('../data/places.mdp.json', import.meta.url);
 
 const listeners = new Map();
 const channels = new Map();
@@ -101,6 +102,19 @@ function cacheWrite(places) {
   try { localStorage.setItem(CACHE_PLACES, JSON.stringify(places)); } catch { /* cuota llena */ }
 }
 
+async function seedFallback() {
+  try {
+    const response = await fetch(SEED_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const places = await response.json();
+    cacheWrite(places);
+    return places.map(fromRow);
+  } catch (seedError) {
+    console.warn('[store] tampoco pude cargar el catálogo local:', seedError.message);
+    return [];
+  }
+}
+
 let placesCache = null;
 
 // ¿El último intento de leer del servidor falló? Lo usa la pantalla para
@@ -115,9 +129,10 @@ async function fetchPlaces() {
 
   const { data, error } = await db.from('places').select('*').order('name');
   if (error) {
-    console.warn('[store] no pude traer los lugares, uso la copia guardada:', error.message);
+    console.warn('[store] no pude traer los lugares, uso la copia guardada o semilla:', error.message);
     sinConexion = true;
-    return cacheRead();
+    const cached = cacheRead();
+    return cached.length ? cached.map(fromRow) : seedFallback();
   }
   sinConexion = false;
   const places = data.map(fromRow);
@@ -276,6 +291,38 @@ export const supabaseStore = {
     invalidate();
     emit('going', null);
     return !yendo;
+  },
+
+  async getReservations() {
+    const db = getClient();
+    const uid = getUserId();
+    if (!db || !uid) return [];
+    const { data, error } = await db.from('reservations')
+      .select('id, place_id, event_date, event_time, people, note, status, created_at, places(name)')
+      .eq('user_id', uid)
+      .order('event_date', { ascending: true });
+    if (error) throw new Error(traducirError(error));
+    return data.map((r) => ({
+      ...r,
+      place_name: r.places?.name || 'Lugar',
+    }));
+  },
+
+  async createReservation(reservation) {
+    const db = getClient();
+    const uid = getUserId();
+    if (!db || !uid) throw new Error('Necesitás conexión para reservar');
+    const { data, error } = await db.from('reservations').insert({
+      user_id: uid,
+      place_id: Number(reservation.place_id),
+      event_date: reservation.event_date,
+      event_time: reservation.event_time,
+      people: Number(reservation.people),
+      note: reservation.note || null,
+    }).select('id, place_id, event_date, event_time, people, note, status, created_at').single();
+    if (error) throw new Error(traducirError(error));
+    emit('reservations', data);
+    return data;
   },
 
   /** El perfil del usuario, para mostrar su nombre en el chat. */

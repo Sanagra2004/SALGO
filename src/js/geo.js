@@ -55,7 +55,7 @@ export function formatDistance(km) {
  *           'ciudad' → sin permiso, usamos el centro de la ciudad elegida
  *   precise: true solo cuando viene del GPS
  */
-let position = { lat: null, lng: null, source: null, precise: false };
+let position = { lat: null, lng: null, accuracy: null, source: null, precise: false };
 
 export function getPosition() {
   return { ...position };
@@ -68,7 +68,7 @@ export function isPrecise() {
 /** Fallback: centra en la ciudad elegida. Siempre deja una posición usable. */
 export function useCityCenter(cityName) {
   const c = CITY_CENTERS[cityName] || CITY_CENTERS['Mar del Plata'];
-  position = { lat: c.lat, lng: c.lng, source: 'ciudad', precise: false };
+  position = { lat: c.lat, lng: c.lng, accuracy: null, source: 'ciudad', precise: false };
   return getPosition();
 }
 
@@ -96,6 +96,7 @@ export function requestLocation(cityName, { timeout = 8000 } = {}) {
         position = {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
+          accuracy: Number.isFinite(pos.coords.accuracy) ? pos.coords.accuracy : null,
           source: 'gps',
           precise: true,
         };

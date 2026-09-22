@@ -6,7 +6,7 @@
 
 import { store } from './store.js';
 import { escapeHtml, showToast, $, colorFor, initials } from './ui.js';
-import { getPlaces, openDetail } from './places.js';
+import { getPlaces, getCurrentDetail, openDetail } from './places.js';
 
 // ══════════════════════════════════
 // OFERTAS — Descuentos diarios
@@ -316,11 +316,16 @@ export function renderFriendsScreen() {
 }
 
 // ============ RESERVAS ============
-const RESERVATIONS = [];
+let reservations = [];
+let reservationPlaceId = null;
 
-export function openReserva(placeId) {
-  const p = getPlaces().find(x => x.id === placeId) || getPlaces()[0] || {};
+export async function openReserva(placeId) {
+  const requestedId = placeId ?? getCurrentDetail();
+  reservationPlaceId = typeof requestedId === 'object' ? requestedId?.id : Number(requestedId);
+  const p = getPlaces().find(x => x.id === reservationPlaceId) || getPlaces()[0] || {};
   (function(){var _e=document.getElementById('resv-place-name');if(_e)_e.textContent = p.name})();
+  const date = document.getElementById('resv-fecha');
+  if (date && !date.value) date.value = new Date().toISOString().slice(0, 10);
   document.getElementById('resv-modal').classList.add('show');
 }
 
@@ -328,33 +333,50 @@ export function closeReserva() {
   document.getElementById('resv-modal').classList.remove('show');
 }
 
-export function confirmReserva() {
+export async function confirmReserva() {
   const fecha = document.getElementById('resv-fecha').value;
   const hora  = document.getElementById('resv-hora').value;
   const cant  = document.getElementById('resv-cant').value;
   const place = document.getElementById('resv-place-name').textContent;
   if (!fecha || !hora) { showToast('❌ Completá fecha y hora'); return; }
-  RESERVATIONS.push({ place, fecha, hora, cant, id: Date.now() });
+  if (!reservationPlaceId) { showToast('❌ Elegí un lugar válido'); return; }
+  try {
+    const created = await store.createReservation({
+      place_id: reservationPlaceId,
+      event_date: fecha,
+      event_time: hora,
+      people: cant,
+      note: document.querySelector('#resv-modal input[placeholder*="cumpleaños"]')?.value.trim() || '',
+    });
+    reservations = [...reservations, { ...created, place_name: created.place_name || place }];
+  } catch (err) {
+    console.warn('[reservas] no pude crear la reserva:', err);
+    showToast('❌ ' + (err.message || 'No pude crear la reserva'));
+    return;
+  }
   closeReserva();
-  showToast(`✅ Reserva confirmada — ${place} · ${cant} personas`);
+  showToast(`✅ Solicitud enviada — ${place} · ${cant} personas`);
   renderReservations();
 }
 
-export function renderReservations() {
+export async function renderReservations() {
   const el = document.getElementById('resv-list');
   if (!el) return;
-  if (!RESERVATIONS.length) {
+  try { reservations = await store.getReservations(); } catch (err) {
+    console.warn('[reservas] no pude leer reservas:', err);
+  }
+  if (!reservations.length) {
     el.innerHTML = '<div style="text-align:center;padding:30px 20px;color:var(--txt3);font-size:13px;">No tenés reservas activas.<br>Tocá "Reservar" en cualquier lugar.</div>';
     return;
   }
-  el.innerHTML = RESERVATIONS.map(r => `
+  el.innerHTML = reservations.map(r => `
     <div class="resv-card">
       <div class="resv-ico">🎟️</div>
       <div class="resv-info">
-        <div class="resv-name">${r.place}</div>
-        <div class="resv-sub">${r.fecha} · ${r.hora} · ${r.cant} personas</div>
+        <div class="resv-name">${r.place_name || r.place}</div>
+        <div class="resv-sub">${r.event_date || r.fecha} · ${r.event_time || r.hora} · ${r.people || r.cant} personas</div>
       </div>
-      <div class="resv-tag">Confirmada</div>
+      <div class="resv-tag">${r.status === 'confirmed' ? 'Confirmada' : 'Pendiente'}</div>
     </div>`).join('');
 }
 

@@ -243,13 +243,13 @@
 
 /* Punto del usuario. */
 .salgo-me-dot {
-  position: absolute; left: -6px; top: -6px;
+  position: absolute; left: 12px; top: 12px;
   width: 12px; height: 12px; border-radius: 50%;
   background: #007aff; border: 2.5px solid #fff;
   box-shadow: 0 1px 6px rgba(0,0,0,0.4);
 }
 .salgo-me-halo {
-  position: absolute; left: -18px; top: -18px;
+  position: absolute; left: 0; top: 0;
   width: 36px; height: 36px; border-radius: 50%;
   background: rgba(0,122,255,0.16); animation: pulse 2s infinite;
 }

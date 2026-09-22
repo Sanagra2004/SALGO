@@ -55,8 +55,8 @@ function userIcon() {
   return L.divIcon({
     className: 'salgo-me',
     html: '<div class="salgo-me-dot"></div><div class="salgo-me-halo"></div>',
-    iconSize: [0, 0],
-    iconAnchor: [0, 0],
+    iconSize: [36, 36],
+    iconAnchor: [18, 18],
   });
 }
 
@@ -83,7 +83,7 @@ export function ensureMap(containerId, { zoom = 14, interactive = true } = {}) {
   });
   L.tileLayer(TILE_URL, { attribution: TILE_ATTR, maxZoom: 19 }).addTo(map);
 
-  const entry = { map, markers: L.layerGroup().addTo(map), me: null };
+  const entry = { map, markers: L.layerGroup().addTo(map), me: null, accuracy: null };
   maps.set(containerId, entry);
   return entry;
 }
@@ -138,15 +138,29 @@ export function renderPlaces(containerId, places,
   const pos = getPosition();
   if (pos.lat != null) {
     if (entry.me) map.removeLayer(entry.me);
+    if (entry.accuracy) map.removeLayer(entry.accuracy);
     entry.me = L.marker([pos.lat, pos.lng], {
       icon: userIcon(),
       interactive: false,
       zIndexOffset: -100,
     }).addTo(map);
-    entry.me.bindTooltip(isPrecise() ? 'Estás acá' : 'Centro de la ciudad', {
+    const locationLabel = isPrecise()
+      ? (pos.accuracy ? `Estás acá · precisión ±${Math.round(pos.accuracy)}m` : 'Estás acá')
+      : 'Centro de la ciudad';
+    entry.me.bindTooltip(locationLabel, {
       direction: 'top',
       offset: [0, -12],
     });
+    if (isPrecise() && Number.isFinite(pos.accuracy) && pos.accuracy > 0) {
+      entry.accuracy = L.circle([pos.lat, pos.lng], {
+        radius: pos.accuracy,
+        color: '#007aff',
+        weight: 1,
+        fillColor: '#007aff',
+        fillOpacity: 0.08,
+        interactive: false,
+      }).addTo(map);
+    }
     points.push([pos.lat, pos.lng]);
   }
 

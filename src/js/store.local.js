@@ -12,6 +12,7 @@
 const KEY_PLACES = 'salgo_places';
 const KEY_GOING = 'salgo_going';
 const KEY_MSGS = 'salgo_msgs';
+const KEY_RESERVATIONS = 'salgo_reservations';
 const KEY_SEEDED = 'salgo_seeded_v1';
 
 const SEED_URL = new URL('../data/places.mdp.json', import.meta.url);
@@ -193,6 +194,23 @@ export const localStore = {
     write(KEY_GOING, next);
     emit('going', next);
     return next.includes(id);
+  },
+
+  async getReservations() {
+    return read(KEY_RESERVATIONS, []);
+  },
+
+  async createReservation(reservation) {
+    const current = await this.getReservations();
+    const next = {
+      ...reservation,
+      id: reservation.id || `local-${Date.now()}`,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+    };
+    write(KEY_RESERVATIONS, [...current, next]);
+    emit('reservations', next);
+    return next;
   },
 
   subscribe(topic, cb) {
