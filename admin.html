@@ -127,6 +127,7 @@
     <button class="admin-tab active" data-tab="dashboard">📊 Resumen</button>
     <button class="admin-tab" data-tab="lugares">📍 Lugares</button>
     <button class="admin-tab" data-tab="nuevo">➕ Nuevo</button>
+    <button class="admin-tab" data-tab="eventos">🎉 Eventos</button>
     <button class="admin-tab" data-tab="afluencia">🔥 Afluencia</button>
   </div>
 
@@ -271,6 +272,34 @@
       <b>pisar a mano</b> cuando sabés mejor que el cálculo — por ejemplo si
       estás en la puerta del local. La carga manual vale <b>6 horas</b> y después
       vuelve el automático, para que un número viejo no quede mintiendo.
+    </div>
+
+    <div class="admin-pane" data-pane="eventos">
+      <div class="admin-note" style="margin-bottom:14px;">
+        Publicá la fecha real, el line-up y los precios de cada noche. Solo los
+        eventos publicados aparecen en la ficha pública del boliche.
+      </div>
+      <div id="adm-events-list"></div>
+      <div class="admin-form-card">
+        <div class="admin-form-title">Publicar evento</div>
+        <label class="admin-form-lbl">Boliche *</label>
+        <select class="admin-form-sel" id="adm-event-place"></select>
+        <label class="admin-form-lbl">Fecha *</label>
+        <input class="admin-form-inp" id="adm-event-date" type="date">
+        <label class="admin-form-lbl">Nombre del evento *</label>
+        <input class="admin-form-inp" id="adm-event-title" placeholder="Ej: Sábado RKT">
+        <label class="admin-form-lbl">Descripción</label>
+        <textarea class="admin-form-inp" id="adm-event-description" rows="2" placeholder="Qué va a pasar esta noche"></textarea>
+        <label class="admin-form-lbl">DJ / line-up</label>
+        <input class="admin-form-inp" id="adm-event-lineup" placeholder="DJ, banda o artista · separado por comas">
+        <div class="admin-form-row">
+          <div><label class="admin-form-lbl">Entrada</label><input class="admin-form-inp" id="adm-event-entry" placeholder="$5.000"></div>
+          <div><label class="admin-form-lbl">Mesa</label><input class="admin-form-inp" id="adm-event-table" placeholder="$30.000"></div>
+        </div>
+        <label class="admin-form-lbl">Cupo opcional</label>
+        <input class="admin-form-inp" id="adm-event-capacity" type="number" min="1" placeholder="500">
+        <button class="admin-save-btn" data-action="guardar-evento">🎉 Publicar evento</button>
+      </div>
     </div>
     <div id="adm-crowd-list"></div>
   </div>

@@ -141,6 +141,63 @@ export function adminTab(name, el) {
   if (name === 'dashboard') renderDashboard();
   if (name === 'lugares') renderPlacesList();
   if (name === 'afluencia') renderCrowd();
+  if (name === 'eventos') renderEvents();
+}
+
+const eventVal = (id) => ($(id)?.value || '').trim();
+
+export async function renderEvents() {
+  const places = await store.getPlaces();
+  const select = $('adm-event-place');
+  if (select) {
+    select.innerHTML = places.map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+  }
+  const el = $('adm-events-list');
+  if (!el) return;
+  let events = [];
+  try {
+    events = (await Promise.all(places.map((p) => store.getEvents({ placeId: p.id })))).flat()
+      .sort((a, b) => a.event_date.localeCompare(b.event_date));
+  } catch (error) {
+    console.warn('[admin] eventos:', error);
+    el.innerHTML = '<div class="admin-empty">No pudimos cargar los eventos. Revisá la conexión.</div>';
+    return;
+  }
+  el.innerHTML = events.length ? events.map((event) => {
+    const place = places.find((p) => Number(p.id) === Number(event.place_id));
+    return `<div class="admin-recent-row">
+      <div style="flex:1;"><div class="admin-recent-name">${escapeHtml(event.title)}</div>
+      <div class="admin-recent-sub">${escapeHtml(place?.name || 'Lugar')} · ${escapeHtml(event.event_date)} · ${escapeHtml(event.entry_price || 'Consultar')}</div></div>
+      <span class="admin-recent-badge on">Publicado</span>
+    </div>`;
+  }).join('') : '<div class="admin-empty">Todavía no hay eventos publicados.</div>';
+}
+
+export async function saveEvent() {
+  const placeId = Number(eventVal('adm-event-place'));
+  const date = eventVal('adm-event-date');
+  const title = eventVal('adm-event-title');
+  if (!placeId || !date || title.length < 2) {
+    showToast('❌ Completá boliche, fecha y nombre del evento');
+    return;
+  }
+  try {
+    await store.saveEvent({
+      place_id: placeId,
+      event_date: date,
+      title,
+      description: eventVal('adm-event-description'),
+      line_up: eventVal('adm-event-lineup').split(',').map((name) => name.trim()).filter(Boolean),
+      entry_price: eventVal('adm-event-entry') || 'Consultar',
+      table_price: eventVal('adm-event-table') || null,
+      capacity: Number(eventVal('adm-event-capacity')) || null,
+      published: true,
+    });
+    showToast('✅ Evento publicado');
+    await renderEvents();
+  } catch (error) {
+    showToast('❌ ' + error.message);
+  }
 }
 
 // ---------- dashboard ----------
@@ -504,6 +561,7 @@ export async function initAdmin() {
     if (sc) { saveCrowd(Number(sc.dataset.savecrowd)); return; }
     if (t.closest('[data-action="buscar-direccion"]')) buscarDireccion();
     if (t.closest('[data-action="guardar"]')) savePlace();
+    if (t.closest('[data-action="guardar-evento"]')) saveEvent();
     if (t.closest('[data-action="limpiar"]')) resetForm();
     if (t.closest('[data-action="restaurar"]')) resetToSeed();
     if (t.closest('[data-action="borrar-todo"]')) deleteAll();

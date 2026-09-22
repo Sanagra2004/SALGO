@@ -343,12 +343,39 @@ export async function openDetail(id) {
 
   updateGoingUI(p);
   renderGoingAvatars();
+  await renderEvents(placeId);
 
   const { renderChat } = await import('./chat.js');
   await renderChat(placeId);
 
   const { showScreen } = await import('./main.js');
   showScreen('detail');
+}
+
+async function renderEvents(placeId) {
+  const el = $('detail-events');
+  if (!el) return;
+  try {
+    const events = await store.getEvents({ placeId, date: new Date().toISOString().slice(0, 10) });
+    if (!events.length) {
+      el.innerHTML = '<div class="detail-events-empty">Este lugar todavía no publicó eventos para hoy.</div>';
+      return;
+    }
+    el.innerHTML = `
+      <div class="detail-events-title">🎉 Esta noche</div>
+      ${events.map((event) => `
+        <div class="detail-event-card">
+          <div class="detail-event-main">
+            <div class="detail-event-name">${escapeHtml(event.title)}</div>
+            <div class="detail-event-meta">${escapeHtml(event.line_up?.join(' · ') || 'Line-up a confirmar')} · Entrada ${escapeHtml(event.entry_price || 'Consultar')}</div>
+            ${event.description ? `<div class="detail-event-desc">${escapeHtml(event.description)}</div>` : ''}
+          </div>
+          ${event.table_price ? `<div class="detail-event-table">Mesa<br><b>${escapeHtml(event.table_price)}</b></div>` : ''}
+        </div>`).join('')}`;
+  } catch (error) {
+    console.warn('[places] eventos:', error);
+    el.innerHTML = '<div class="detail-events-empty">No pudimos cargar los eventos.</div>';
+  }
 }
 
 function updateGoingUI(p) {
